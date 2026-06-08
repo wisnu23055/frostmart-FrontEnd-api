@@ -1,4 +1,4 @@
-# ❄️ FrostMart — Frontend Web Application
+# ❄️ FrostMart — Frontend Web Application (ReactJS)
 
 FrostMart adalah platform e-commerce frozen food premium yang modern, cepat, dan sepenuhnya responsif. Aplikasi ini dirancang menggunakan React, Vite, dan Tailwind CSS dengan cold-chain logistics flow terintegrasi.
 
