@@ -1,13 +1,26 @@
 import { NavLink, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import {
   FiShoppingBag,
   FiSettings,
   FiMapPin,
   FiLogOut,
+  FiBriefcase,
 } from "react-icons/fi";
 
 function ProfileSidebar() {
   const navigate = useNavigate();
+  const user = useSelector((state) => state.auth.user);
+
+  const getInitials = (name) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -24,12 +37,16 @@ function ProfileSidebar() {
 
       {/* PROFILE */}
       <div className="flex flex-col items-center">
-        <div className="w-24 h-24 rounded-full bg-gray-300 mb-4"></div>
+        <div className="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 text-3xl font-extrabold mb-4 select-none">
+          {getInitials(user?.name)}
+        </div>
 
-        <h2 className="text-3xl font-bold">Name</h2>
+        <h2 className="text-3xl font-bold text-center break-words w-full">
+          {user?.name || "Nama Pengguna"}
+        </h2>
 
-        <p className="text-gray-500 text-sm mt-1">
-          email@gmail.com
+        <p className="text-gray-500 text-sm mt-1 text-center break-all w-full">
+          {user?.email || "email@example.com"}
         </p>
       </div>
 
@@ -50,6 +67,13 @@ function ProfileSidebar() {
           <FiMapPin />
           Alamat
         </NavLink>
+
+        {user?.role === "admin" && (
+          <NavLink to="/profile/register-store" className={menuClass}>
+            <FiBriefcase />
+            Daftarkan Toko
+          </NavLink>
+        )}
 
         <button
           onClick={handleLogout}

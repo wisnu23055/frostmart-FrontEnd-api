@@ -1,86 +1,80 @@
+import { FaInstagram, FaFacebookF, FaTwitter } from "react-icons/fa";
+import logo from "../assets/images/logo frostmart.png";
+
 function Footer() {
   return (
-    <footer id="about" className="bg-blue-900 text-white px-10 py-20">
+    <footer id="about" className="bg-[#0f2461] text-white px-10 py-16">
 
-      <div className="grid grid-cols-4 gap-10 border-b border-white/20 pb-14">
+      <div className="max-w-[1200px] mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 border-b border-white/10 pb-12 mb-10">
 
-        {/* LOGO */}
-        <div>
-
-          <div className="flex items-center gap-3 mb-6">
-
-            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center">
-              ❄
+          {/* LOGO & INFO */}
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-[#1c54ff] flex items-center justify-center">
+                <img src={logo} alt="FrostMart" className="w-7 h-7 object-contain" onError={(e) => { e.target.style.display = "none"; }} />
+              </div>
+              <h2 className="text-xl font-bold">FrostMart</h2>
             </div>
 
-            <h2 className="text-3xl font-bold">
-              FrostMart
-            </h2>
+            <p className="text-sm text-gray-300 leading-relaxed mb-5">
+              Jalan Semangka Raya, Telaga Murni,<br />
+              Cikarang Barat, Kab. Bekasi
+            </p>
 
+            {/* Social Media */}
+            <div className="flex items-center gap-3">
+              {[
+                { icon: <FaInstagram size={16} />, href: "#" },
+                { icon: <FaFacebookF size={16} />, href: "#" },
+                { icon: <FaTwitter size={16} />, href: "#" },
+              ].map((s, i) => (
+                <a
+                  key={i}
+                  href={s.href}
+                  className="w-9 h-9 rounded-full border border-white/20 flex items-center justify-center text-white/70 hover:text-white hover:bg-[#1c54ff] hover:border-[#1c54ff] transition-all"
+                >
+                  {s.icon}
+                </a>
+              ))}
+            </div>
           </div>
 
-          <p className="text-lg leading-relaxed text-gray-200">
-            Jalan Semangka Raya, Telaga Murni,
-            Cikarang Barat, Kab. Bekasi
-          </p>
+          {/* COMPANY */}
+          <div>
+            <h3 className="font-bold text-base mb-5">Company</h3>
+            <ul className="space-y-3 text-sm text-gray-300">
+              <li><a href="#" className="hover:text-white transition-colors">Tentang Kami</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Karir</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Cara Kerja</a></li>
+            </ul>
+          </div>
+
+          {/* POLICY */}
+          <div>
+            <h3 className="font-bold text-base mb-5">Kebijakan</h3>
+            <ul className="space-y-3 text-sm text-gray-300">
+              <li><a href="#" className="hover:text-white transition-colors">FAQ</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Privasi</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Pengiriman</a></li>
+            </ul>
+          </div>
+
+          {/* CONTACT */}
+          <div>
+            <h3 className="font-bold text-base mb-5">Hubungi Kami</h3>
+            <ul className="space-y-3 text-sm text-gray-300">
+              <li>+62 896 7311 2766</li>
+              <li>food@example.com</li>
+            </ul>
+          </div>
 
         </div>
 
-        {/* COMPANY */}
-        <div>
-
-          <h3 className="font-bold text-2xl mb-6">
-            Company
-          </h3>
-
-          <ul className="space-y-4 text-gray-200 text-lg">
-
-            <li>About Us</li>
-            <li>Career</li>
-            <li>How It Work</li>
-
-          </ul>
-
-        </div>
-
-        {/* POLICY */}
-        <div>
-
-          <h3 className="font-bold text-2xl mb-6">
-            Policy
-          </h3>
-
-          <ul className="space-y-4 text-gray-200 text-lg">
-
-            <li>FAQ</li>
-            <li>Privacy</li>
-            <li>Shipping</li>
-
-          </ul>
-
-        </div>
-
-        {/* CONTACT */}
-        <div>
-
-          <h3 className="font-bold text-2xl mb-6">
-            Get In Touch
-          </h3>
-
-          <ul className="space-y-4 text-gray-200 text-lg">
-
-            <li>+62 896 7311 2766</li>
-            <li>food@example.com</li>
-
-          </ul>
-
-        </div>
-
+        <p className="text-center text-gray-400 text-sm">
+          © {new Date().getFullYear()} Let'sFood. ALL RIGHT RESERVED.
+        </p>
       </div>
-
-      <p className="text-center text-gray-300 mt-10 text-lg">
-        © 2022 Let’sFood. ALL RIGHT RESERVED.
-      </p>
 
     </footer>
   );

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import {
   FiSearch,
   FiShoppingCart,
@@ -40,10 +41,12 @@ function AdminNavbar() {
 
       {/* ICON */}
       <div className="flex items-center gap-6 text-2xl text-gray-600">
-
-        <FiShoppingCart className="cursor-pointer" />
-        <FiUser className="cursor-pointer" />
-
+        <Link to="/menu" title="Web Product" className="hover:text-blue-700 transition-colors">
+          <FiShoppingCart />
+        </Link>
+        <Link to="/profile" title="Profile Menu" className="hover:text-blue-700 transition-colors">
+          <FiUser />
+        </Link>
       </div>
 
     </div>

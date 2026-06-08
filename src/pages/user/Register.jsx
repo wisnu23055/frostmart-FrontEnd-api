@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import {
   FiUser,
   FiMail,
@@ -7,7 +8,12 @@ import {
   FiCheckCircle,
 } from "react-icons/fi";
 
+import axiosInstance from "../../api/axiosInstance";
+
 function Register() {
+  const navigate = useNavigate();
+  const user = useSelector((state) => state.auth.user);
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -15,6 +21,8 @@ function Register() {
     confirmPassword: "",
     agreeTerms: false,
   });
+  const [errorMsg, setErrorMsg] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -25,26 +33,62 @@ function Register() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMsg("");
 
     // VALIDASI PASSWORD
     if (formData.password !== formData.confirmPassword) {
-      alert("Password dan Confirm Password harus sama!");
+      setErrorMsg("Password dan Confirm Password harus sama!");
       return;
     }
 
     // VALIDASI TERMS
     if (!formData.agreeTerms) {
-      alert("Kamu harus menyetujui Terms of Service dan Privacy Policy!");
+      setErrorMsg("Kamu harus menyetujui Terms of Service dan Privacy Policy!");
       return;
     }
 
-    // REGISTER SUCCESS
-    console.log(formData);
+    setIsLoading(true);
 
-    alert("Register berhasil!");
+    try {
+      await axiosInstance.post("/auth/local/signup", {
+        name: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      alert("Register berhasil! Silakan login.");
+      navigate("/login");
+    } catch (error) {
+      if (error.response && error.response.data.message) {
+        setErrorMsg(error.response.data.message);
+      } else {
+        setErrorMsg("Koneksi ke backend gagal. Pastikan server Node.js nyala!");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  if (user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-blue-500 to-blue-700 flex justify-center items-center px-8 py-10">
+        <div className="bg-white rounded-3xl shadow-xl w-full max-w-md p-8 text-center text-gray-800">
+          <h1 className="text-3xl font-extrabold mb-4 text-[#11327c]">Anda Sudah Login</h1>
+          <p className="text-gray-600 mb-8 leading-relaxed">
+            Anda telah berhasil masuk ke akun Anda di FrostMart. Tidak perlu melakukan pendaftaran baru.
+          </p>
+          <button
+            onClick={() => navigate("/")}
+            className="w-full bg-[#1c54ff] hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition shadow-md"
+          >
+            Kembali ke Beranda
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex">
@@ -85,6 +129,12 @@ tailored for culinary excellence.
           <p className="mb-10 text-lg text-blue-100">
             Join FrostMart today.
           </p>
+
+          {errorMsg && (
+            <div className="bg-red-100 text-red-600 p-3 rounded-xl mb-4 text-sm font-medium text-center border border-red-200">
+              {errorMsg}
+            </div>
+          )}
 
           {/* FORM */}
           <form
@@ -201,9 +251,10 @@ tailored for culinary excellence.
             {/* BUTTON */}
             <button
               type="submit"
-              className="w-full bg-blue-900 hover:bg-blue-950 transition py-4 rounded-lg font-semibold text-lg"
+              disabled={isLoading}
+              className="w-full bg-blue-900 hover:bg-blue-950 transition py-4 rounded-lg font-semibold text-lg disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Create Account
+              {isLoading ? "Loading..." : "Create Account"}
             </button>
 
           </form>

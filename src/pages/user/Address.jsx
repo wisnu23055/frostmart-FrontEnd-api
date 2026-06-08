@@ -1,161 +1,300 @@
-import { useState } from "react";
-import {
-  FiMapPin,
-  FiEdit2,
-  FiTrash2,
-  FiPlus,
-  FiPackage,
-  FiSettings,
-  FiLogOut,
-} from "react-icons/fi";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { FiEdit2, FiTrash2, FiPlus } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+
+import axiosInstance from "../../api/axiosInstance";
+
+const emptyForm = {
+  address_type: "rumah",
+  recipient_name: "",
+  city_district: "",
+  postal_code: "",
+  full_address: "",
+};
+
+const addressTypeOptions = [
+  { value: "rumah", label: "Rumah" },
+  { value: "kantor", label: "Kantor" },
+  { value: "apartemen", label: "Apartemen" },
+  { value: "kos", label: "Kos" },
+  { value: "lainnya", label: "Lainnya" },
+];
 
 function Address() {
   const navigate = useNavigate();
 
-  // DUMMY DATA
-  const [addresses, setAddresses] = useState([
-    {
-      id: 1,
-      label: "Rumah",
-      address:
-        "Jl. Sudirman No.43, Jakarta Selatan, DKI Jakarta 12190",
-      primary: true,
-    },
-    {
-      id: 2,
-      label: "Kantor",
-      address:
-        "Jl. Mawar No.12, Jakarta Pusat, DKI Jakarta 15320",
-      primary: false,
-    },
-  ]);
+  const [addresses, setAddresses] = useState([]);
+  const [form, setForm] = useState(emptyForm);
+  const [activeId, setActiveId] = useState(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
-  // TAMBAH ALAMAT
-  const handleAddAddress = () => {
-    const newAddress = {
-      id: addresses.length + 1,
-      label: "Alamat Baru",
-      address: "Masukkan alamat baru...",
-      primary: false,
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      try {
+        const response = await axiosInstance.get("/addresses/me");
+        setAddresses(response.data);
+
+        if (response.data.length > 0) {
+          const primaryAddress = response.data.find((item) => item.is_primary) || response.data[0];
+          setActiveId(primaryAddress.id);
+          setForm({
+            address_type: primaryAddress.address_type || "rumah",
+            recipient_name: primaryAddress.recipient_name || "",
+            city_district: primaryAddress.city_district || "",
+            postal_code: primaryAddress.postal_code || "",
+            full_address: primaryAddress.full_address || "",
+          });
+          setIsFormOpen(false);
+        } else {
+          setIsFormOpen(true);
+        }
+      } catch (error) {
+        if (error?.response?.status === 401 || error?.response?.status === 403) {
+          navigate("/login");
+          return;
+        }
+
+        setAddresses([]);
+        setIsFormOpen(true);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    setAddresses([...addresses, newAddress]);
+    fetchAddresses();
+  }, [navigate]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  // HAPUS ALAMAT
-  const handleDelete = (id) => {
-    setAddresses(addresses.filter((item) => item.id !== id));
+  const startCreate = () => {
+    setActiveId(null);
+    setForm(emptyForm);
+    setIsFormOpen(true);
   };
 
-  // EDIT ALAMAT (dummy)
-  const handleEdit = (id) => {
-    alert(`Edit alamat ID: ${id}`);
+  const startEdit = (address) => {
+    setActiveId(address.id);
+    setForm({
+      address_type: address.address_type || "rumah",
+      recipient_name: address.recipient_name || "",
+      city_district: address.city_district || "",
+      postal_code: address.postal_code || "",
+      full_address: address.full_address || "",
+    });
+    setIsFormOpen(true);
   };
 
-  // LOGOUT
-  const handleLogout = () => {
-    navigate("/login");
+  const handleSave = async () => {
+    setIsSaving(true);
+
+    try {
+      const payload = {
+        address_type: form.address_type,
+        recipient_name: form.recipient_name.trim(),
+        city_district: form.city_district.trim(),
+        postal_code: form.postal_code.trim(),
+        full_address: form.full_address.trim(),
+      };
+
+      const response = activeId
+        ? await axiosInstance.put(`/addresses/${activeId}`, payload)
+        : await axiosInstance.post("/addresses", payload);
+
+      if (activeId) {
+        setAddresses((prev) => prev.map((item) => (item.id === activeId ? response.data : item)));
+      } else {
+        setAddresses((prev) => [response.data, ...prev]);
+        setActiveId(response.data.id);
+      }
+
+      setForm({
+        address_type: response.data.address_type,
+        recipient_name: response.data.recipient_name,
+        city_district: response.data.city_district,
+        postal_code: response.data.postal_code,
+        full_address: response.data.full_address,
+      });
+      setIsFormOpen(false);
+    } catch (error) {
+      const message = error?.response?.data?.message || "Gagal menyimpan alamat.";
+      alert(message);
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  const handleDelete = async (id) => {
+    const target = addresses.find((item) => item.id === id);
+    if (!target) return;
+
+    const confirmed = window.confirm("Hapus alamat ini?");
+    if (!confirmed) return;
+
+    setIsSaving(true);
+
+    try {
+      await axiosInstance.delete(`/addresses/${id}`);
+      const nextAddresses = addresses.filter((item) => item.id !== id);
+      setAddresses(nextAddresses);
+
+      if (activeId === id) {
+        const nextPrimary = nextAddresses.find((item) => item.is_primary) || nextAddresses[0] || null;
+
+        if (nextPrimary) {
+          setActiveId(nextPrimary.id);
+          setForm({
+            address_type: nextPrimary.address_type || "rumah",
+            recipient_name: nextPrimary.recipient_name || "",
+            city_district: nextPrimary.city_district || "",
+            postal_code: nextPrimary.postal_code || "",
+            full_address: nextPrimary.full_address || "",
+          });
+          setIsFormOpen(false);
+        } else {
+          setActiveId(null);
+          setForm(emptyForm);
+          setIsFormOpen(true);
+        }
+      }
+    } catch (error) {
+      const message = error?.response?.data?.message || "Gagal menghapus alamat.";
+      alert(message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const hasAddresses = addresses.length > 0;
+
+  if (isLoading) {
+    return (
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 mb-6">Alamat Tersimpan</h1>
+        <div className="border border-gray-200 rounded-2xl p-6 bg-white shadow-sm text-gray-500">
+          Memuat alamat...
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <section className="min-h-screen bg-gradient-to-b from-sky-400 to-indigo-600 px-10 py-12">
+    <div>
+      {isFormOpen && (
+        <div className="border border-gray-200 rounded-2xl p-6 bg-white shadow-sm mb-6">
+          <div className="space-y-5">
+            <div>
+              <label className="block text-[11px] font-semibold text-gray-500 text-right mb-2">
+                Kategori Alamat
+              </label>
+              <select
+                name="address_type"
+                value={form.address_type}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-xl px-4 py-3 text-gray-700 focus:outline-none focus:border-[#1c54ff] focus:ring-1 focus:ring-[#1c54ff] transition-all bg-white"
+              >
+                {addressTypeOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-      <div className="max-w-7xl mx-auto flex gap-10">
+            <div>
+              <label className="block text-[11px] font-semibold text-gray-500 text-right mb-2">
+                Nama Lengkap Penerima
+              </label>
+              <input
+                type="text"
+                name="recipient_name"
+                value={form.recipient_name}
+                onChange={handleChange}
+                placeholder="Masukkan nama lengkap"
+                className="w-full border border-gray-300 rounded-xl px-4 py-3 text-gray-700 focus:outline-none focus:border-[#1c54ff] focus:ring-1 focus:ring-[#1c54ff] transition-all"
+              />
+            </div>
 
-        {/* SIDEBAR */}
-        <div className="w-[280px] bg-white rounded-3xl shadow-xl p-8 h-fit">
+            <div>
+              <label className="block text-[11px] font-semibold text-gray-500 text-right mb-2">
+                Kota / Kecamatan
+              </label>
+              <input
+                type="text"
+                name="city_district"
+                value={form.city_district}
+                onChange={handleChange}
+                placeholder="Pilih Kota atau Kecamatan"
+                className="w-full border border-gray-300 rounded-xl px-4 py-3 text-gray-700 focus:outline-none focus:border-[#1c54ff] focus:ring-1 focus:ring-[#1c54ff] transition-all"
+              />
+            </div>
 
-          <div className="flex flex-col items-center">
-            <div className="w-28 h-28 rounded-full bg-gray-300 mb-4"></div>
+            <div>
+              <label className="block text-[11px] font-semibold text-gray-500 text-right mb-2">
+                Kode Pos
+              </label>
+              <input
+                type="text"
+                name="postal_code"
+                value={form.postal_code}
+                onChange={handleChange}
+                placeholder="Contoh: 12345"
+                className="w-full border border-gray-300 rounded-xl px-4 py-3 text-gray-700 focus:outline-none focus:border-[#1c54ff] focus:ring-1 focus:ring-[#1c54ff] transition-all"
+              />
+            </div>
 
-            <h2 className="text-3xl font-bold text-gray-800">
-              Name
-            </h2>
-
-            <p className="text-sm text-gray-500 mt-1">
-              email@gmail.com
-            </p>
-          </div>
-
-          {/* MENU */}
-          <div className="mt-10 space-y-3">
-
-            <Link
-              to="/profile/orders"
-              className="flex items-center gap-3 bg-gray-100 hover:bg-blue-100 transition px-5 py-4 rounded-xl font-medium"
-            >
-              <FiPackage />
-              Pesanan Saya
-            </Link>
-
-            <Link
-              to="/profile/settings"
-              className="flex items-center gap-3 bg-gray-100 hover:bg-blue-100 transition px-5 py-4 rounded-xl font-medium"
-            >
-              <FiSettings />
-              Pengaturan
-            </Link>
-
-            <Link
-              to="/profile/address"
-              className="flex items-center gap-3 bg-blue-900 text-white px-5 py-4 rounded-xl font-medium"
-            >
-              <FiMapPin />
-              Alamat
-            </Link>
-
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center gap-3 bg-gray-100 hover:bg-red-100 hover:text-red-500 transition px-5 py-4 rounded-xl font-medium"
-            >
-              <FiLogOut />
-              Keluar
-            </button>
-
+            <div>
+              <label className="block text-[11px] font-semibold text-gray-500 text-right mb-2">
+                Alamat Lengkap
+              </label>
+              <textarea
+                name="full_address"
+                value={form.full_address}
+                onChange={handleChange}
+                placeholder="Nama jalan, gedung, nomor rumah, dsb."
+                rows={4}
+                className="w-full border border-gray-300 rounded-xl px-4 py-3 text-gray-700 focus:outline-none focus:border-[#1c54ff] focus:ring-1 focus:ring-[#1c54ff] transition-all resize-none"
+              />
+            </div>
           </div>
         </div>
+      )}
 
-        {/* CONTENT */}
-        <div className="flex-1">
-
-          <h1 className="text-4xl font-bold text-black mb-8">
-            Alamat Tersimpan
-          </h1>
-
-          {/* LIST ADDRESS */}
-          <div className="space-y-6">
-
+      <div className="space-y-4">
+        {hasAddresses && (
+          <div className="space-y-4">
             {addresses.map((item) => (
               <div
                 key={item.id}
-                className="bg-white rounded-2xl shadow-lg p-6"
+                className={`border rounded-2xl p-6 shadow-sm transition-colors bg-white ${
+                  item.id === activeId ? "border-[#1c54ff]" : "border-gray-200 hover:border-[#1c54ff]"
+                }`}
               >
-                <div className="flex justify-between items-start">
-
+                <div className="flex justify-between items-start gap-4">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-800">
-                      {item.label}
+                    <h2 className="text-xl font-bold text-gray-800 capitalize">
+                      {item.address_type}
                     </h2>
-
                     <p className="text-gray-600 mt-2">
-                      {item.address}
+                      {item.recipient_name}
+                    </p>
+                    <p className="text-gray-600 mt-1">
+                      {item.city_district} • {item.postal_code}
+                    </p>
+                    <p className="text-gray-600 mt-2 leading-relaxed whitespace-pre-wrap">
+                      {item.full_address}
                     </p>
                   </div>
-
-                  {item.primary && (
-                    <span className="bg-blue-900 text-white text-sm px-4 py-1 rounded-lg">
-                      Utama
-                    </span>
-                  )}
                 </div>
 
-                {/* ACTION */}
-                <div className="flex gap-6 mt-6 text-sm font-medium">
-
+                <div className="flex gap-6 mt-6 text-sm font-semibold">
                   <button
-                    onClick={() => handleEdit(item.id)}
-                    className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition"
+                    onClick={() => startEdit(item)}
+                    className="flex items-center gap-2 text-[#1c54ff] hover:text-blue-800 transition"
                   >
                     <FiEdit2 />
                     Edit
@@ -163,29 +302,39 @@ function Address() {
 
                   <button
                     onClick={() => handleDelete(item.id)}
-                    className="flex items-center gap-2 text-red-500 hover:text-red-700 transition"
+                    disabled={isSaving}
+                    className="flex items-center gap-2 text-red-500 hover:text-red-700 transition disabled:opacity-60"
                   >
                     <FiTrash2 />
                     Hapus
                   </button>
-
                 </div>
               </div>
             ))}
-
-            {/* TAMBAH ALAMAT */}
-            <button
-              onClick={handleAddAddress}
-              className="w-full border-2 border-dashed border-white/70 text-white py-6 rounded-2xl text-lg font-medium hover:bg-white/10 transition flex items-center justify-center gap-3"
-            >
-              <FiPlus />
-              Tambah Alamat Baru
-            </button>
-
           </div>
+        )}
+
+        <div className="pt-2">
+          <button
+            onClick={startCreate}
+            className="w-full border-2 border-dashed border-gray-300 text-gray-500 py-5 rounded-2xl text-base font-medium hover:border-[#1c54ff] hover:text-[#1c54ff] hover:bg-blue-50 transition-all flex items-center justify-center gap-3"
+          >
+            <FiPlus className="text-lg" />
+            Tambahkan Alamat Baru
+          </button>
+        </div>
+
+        <div className="pt-2">
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="w-full bg-[#1c54ff] text-white py-4 rounded-2xl font-semibold shadow-md hover:bg-blue-700 transition-colors disabled:opacity-60"
+          >
+            {isSaving ? "Menyimpan..." : activeId ? "Simpan Alamat" : "Simpan Alamat Baru"}
+          </button>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
 
