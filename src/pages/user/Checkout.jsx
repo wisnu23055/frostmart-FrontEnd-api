@@ -54,7 +54,7 @@ export default function Checkout() {
     if (!file) return;
 
     if (file.size > 2 * 1024 * 1024) {
-      alert("Ukuran file tidak boleh melebihi 2MB.");
+      alert("Gambar bukti Anda terlalu besar (maksimal 2MB).");
       return;
     }
 
