@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { FaInstagram, FaFacebookF, FaTwitter } from "react-icons/fa";
 import logo from "../assets/images/logo_frostmart.png";
 
@@ -44,7 +45,7 @@ function Footer() {
           <div>
             <h3 className="font-bold text-base mb-5">Company</h3>
             <ul className="space-y-3 text-sm text-gray-300">
-              <li><a href="#" className="hover:text-white transition-colors">Tentang Kami</a></li>
+              <li><Link to="/about" className="hover:text-white transition-colors">Tentang Kami</Link></li>
               <li><a href="#" className="hover:text-white transition-colors">Karir</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Cara Kerja</a></li>
             </ul>
@@ -64,15 +65,15 @@ function Footer() {
           <div>
             <h3 className="font-bold text-base mb-5">Hubungi Kami</h3>
             <ul className="space-y-3 text-sm text-gray-300">
-              <li>+62 896 7311 2766</li>
-              <li>food@example.com</li>
+              <li>08123456789</li>
+              <li>frostmart@example.com</li>
             </ul>
           </div>
 
         </div>
 
         <p className="text-center text-gray-400 text-sm">
-          © {new Date().getFullYear()} Let'sFood. ALL RIGHT RESERVED.
+          © {new Date().getFullYear()} FrostMart. ALL RIGHT RESERVED.
         </p>
       </div>
 
