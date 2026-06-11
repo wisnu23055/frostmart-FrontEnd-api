@@ -14,5 +14,5 @@ export const PRODUCT_CATEGORIES = [
   "Jajanan",
 ];
 
-// Untuk halaman user (Menu/Search), ditambahkan "All Products" di depan
-export const USER_CATEGORIES = ["All Products", ...PRODUCT_CATEGORIES];
+// Untuk halaman user (Menu/Search), ditambahkan "Semua Produk" di depan
+export const USER_CATEGORIES = ["Semua Produk", ...PRODUCT_CATEGORIES];

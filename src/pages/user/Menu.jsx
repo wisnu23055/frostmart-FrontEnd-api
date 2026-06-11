@@ -73,7 +73,7 @@ function Menu() {
   // State Dinamis
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState("All Products");
+  const [activeCategory, setActiveCategory] = useState("Semua Produk");
   const [priceFilter, setPriceFilter] = useState("all");
 
   // Fetch dari API Backend
@@ -96,7 +96,7 @@ function Menu() {
     return products.filter((p) => {
       // Pastikan category ada supaya filter jalan (pakai fallback buat data kotor)
       const cat = p.category || "Lainnya";
-      const matchCat = activeCategory === "All Products" || cat === activeCategory;
+      const matchCat = activeCategory === "Semua Produk" || cat === activeCategory;
       
       let matchPrice = true;
       const price = p.price || 0;

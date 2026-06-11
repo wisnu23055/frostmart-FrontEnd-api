@@ -103,7 +103,7 @@ function Search() {
   const queryFromUrl = searchParams.get("q") || "";
 
   const [searchInput, setSearchInput] = useState(queryFromUrl);
-  const [activeCategory, setActiveCategory] = useState("All Products");
+  const [activeCategory, setActiveCategory] = useState("Semua Produk");
   const [priceFilter, setPriceFilter] = useState("all");
 
   // Data dari backend
@@ -139,7 +139,7 @@ function Search() {
   const filtered = useMemo(() => {
     return products.filter((p) => {
       const cat = p.category || "Lainnya";
-      const matchCat = activeCategory === "All Products" || cat === activeCategory;
+      const matchCat = activeCategory === "Semua Produk" || cat === activeCategory;
       const price = typeof p.price === "string" ? parseFloat(p.price) : p.price || 0;
       let matchPrice = true;
       if (priceFilter === "under30") matchPrice = price < 30000;
@@ -158,7 +158,7 @@ function Search() {
   const handleResetSearch = () => {
     setSearchInput("");
     setSearchParams({});
-    setActiveCategory("All Products");
+    setActiveCategory("Semua Produk");
     setPriceFilter("all");
   };
 
