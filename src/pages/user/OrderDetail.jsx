@@ -4,6 +4,56 @@ import { FiArrowLeft, FiPackage, FiCreditCard, FiClock } from 'react-icons/fi';
 import axiosInstance from '../../api/axiosInstance'; // Pastikan path ini bener sesuai struktur lu
 import { formatDateTime } from '../../utils/dateFormatter';
 
+const compressImage = (file) => {
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith("image/")) {
+      return resolve(file);
+    }
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+        const MAX_WIDTH = 1200;
+        const MAX_HEIGHT = 1200;
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) return resolve(file);
+            const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+              type: "image/jpeg",
+              lastModified: Date.now(),
+            });
+            resolve(compressedFile);
+          },
+          "image/jpeg",
+          0.7
+        );
+      };
+      img.onerror = (err) => reject(err);
+    };
+    reader.onerror = (err) => reject(err);
+  });
+};
+
 const translateStatus = (order) => {
   if (!order) return '';
   const s = order.status?.toLowerCase() || '';
@@ -32,17 +82,24 @@ export default function OrderDetail() {
   const [paymentProofFile, setPaymentProofFile] = useState(null);
   const [paymentProofPreview, setPaymentProofPreview] = useState("");
 
-  const handlePaymentProofChange = (e) => {
+  const handlePaymentProofChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 2 * 1024 * 1024) {
-      alert("Ukuran file tidak boleh melebihi 2MB.");
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Gambar bukti Anda terlalu besar (maksimal 5MB).");
       return;
     }
 
-    setPaymentProofFile(file);
-    setPaymentProofPreview(URL.createObjectURL(file));
+    try {
+      const compressed = await compressImage(file);
+      setPaymentProofFile(compressed);
+      setPaymentProofPreview(URL.createObjectURL(compressed));
+    } catch (err) {
+      console.error("Gagal mengompresi gambar:", err);
+      setPaymentProofFile(file);
+      setPaymentProofPreview(URL.createObjectURL(file));
+    }
   };
 
   const handleRemovePaymentProof = () => {
