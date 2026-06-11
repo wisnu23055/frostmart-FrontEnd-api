@@ -277,7 +277,6 @@ function ProductDetail() {
                   <FiStar key={s} className="fill-current" size={16} />
                 ))}
               </div>
-              <span className="text-sm text-gray-500 font-medium">108 ULASAN</span>
             </div>
 
             {/* Harga */}
