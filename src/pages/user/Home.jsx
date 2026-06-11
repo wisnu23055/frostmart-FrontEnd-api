@@ -187,7 +187,7 @@ export default function FrostmartHomePage() {
           <h2 className="text-4xl md:text-5xl font-extrabold mb-8 max-w-2xl mx-auto leading-tight">
             Selamat Berbelanja!
           </h2>
-           <Link to="/register" onClick={handleDaftarClick}>
+          <Link to="/register" onClick={handleDaftarClick}>
             <button className="bg-[#1c54ff] hover:bg-blue-700 active:scale-95 transition-all duration-200 text-white px-8 py-3 rounded-full font-bold text-base shadow-lg">
               Daftar Sekarang
             </button>
@@ -248,7 +248,7 @@ export default function FrostmartHomePage() {
                     }}
                     className="mt-4 w-full bg-[#1c54ff] hover:bg-blue-800 text-white text-sm font-semibold py-2 rounded-xl flex items-center justify-center gap-2 transition-colors"
                   >
-                    <FiShoppingCart size={14} /> Tambah ke Keranjang
+                    <FiShoppingCart size={14} /> + Keranjang
                   </button>
 
                   <span className="absolute bottom-4 right-4 text-red-400 text-lg opacity-0 group-hover:opacity-100 transition-opacity">
