@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { removeFromCart, updateQty } from "../../store/slices/cartSlice";
 
 const ONGKOS_KIRIM = 15000;
-const STORE_NAME = "AIDA FROZEN";
 
 function getImageUrl(image) {
   if (!image) return null;
@@ -67,10 +66,7 @@ export default function Cart() {
           {/* KIRI: list produk */}
           <div className="flex-1 w-full flex flex-col gap-4">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-              {/* Header toko */}
-              <div className="px-5 py-3 border-b border-gray-100">
-                <p className="font-bold text-gray-800 text-sm tracking-wide">{STORE_NAME}</p>
-              </div>
+
 
               {/* Item list */}
               <div className="divide-y divide-gray-50">
@@ -82,9 +78,8 @@ export default function Cart() {
                   return (
                     <div
                       key={item.id}
-                      className={`flex items-center gap-3 px-5 py-4 transition-colors ${
-                        isChecked ? "bg-blue-50/50" : ""
-                      }`}
+                      className={`flex items-center gap-3 px-5 py-4 transition-colors ${isChecked ? "bg-blue-50/50" : ""
+                        }`}
                     >
                       {/* Checkbox */}
                       <input
@@ -191,7 +186,7 @@ export default function Cart() {
                 onClick={() => navigate("/checkout", { state: { checkedIds } })}
                 className="mt-5 w-full bg-[#1c54ff] hover:bg-blue-800 text-white font-semibold py-2.5 rounded-xl text-sm transition shadow-md"
               >
-                Lanjut ke Checkout
+                Lanjut ke Pembayaran
               </button>
 
               <button

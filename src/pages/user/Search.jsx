@@ -50,9 +50,9 @@ function ProductCard({ product, onAddToCart }) {
             <p className="text-[#2453d4] font-bold text-[15px] mb-3">Rp {formatRp(price)}</p>
             <button
               onClick={() => onAddToCart(product)}
-              className="w-full bg-[#1c54ff] hover:bg-blue-800 text-white rounded-lg py-2.5 flex items-center justify-center gap-2 text-sm font-semibold shadow-md transition-transform hover:scale-105 active:scale-95"
+              className="w-full bg-[#1c54ff] hover:bg-blue-800 text-white rounded-lg py-3 px-4 flex items-center justify-center gap-2 text-sm font-bold shadow-md transition-transform hover:scale-105 active:scale-95"
             >
-              <FiShoppingCart size={15} /> Tambah ke Keranjang
+              <FiShoppingCart size={15} /> + Keranjang
             </button>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 import axiosInstance from "../../api/axiosInstance";
 import { loginSuccess, logout } from "../../store/slices/authSlice";
@@ -7,6 +8,7 @@ import { loginSuccess, logout } from "../../store/slices/authSlice";
 function Settings() {
   const [tab, setTab] = useState("profile");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { isLogin, user } = useSelector((state) => state.auth);
 
   const [profileForm, setProfileForm] = useState({
@@ -103,6 +105,23 @@ function Settings() {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    const confirmDelete = window.confirm(
+      "Apakah Anda yakin ingin menghapus akun Anda? Tindakan ini tidak dapat dibatalkan."
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await axiosInstance.delete("/auth/user/me");
+      alert("Akun Anda telah berhasil dihapus.");
+      dispatch(logout());
+      navigate("/");
+    } catch (error) {
+      const message = error?.response?.data?.message || "Gagal menghapus akun.";
+      alert(message);
+    }
+  };
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-6">
@@ -113,22 +132,20 @@ function Settings() {
       <div className="flex gap-4 mb-8">
         <button
           onClick={() => setTab("profile")}
-          className={`px-5 py-2.5 rounded-xl font-medium transition-all ${
-            tab === "profile"
+          className={`px-5 py-2.5 rounded-xl font-medium transition-all ${tab === "profile"
               ? "bg-[#1c54ff] text-white shadow-md"
               : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-          }`}
+            }`}
         >
           Edit Profile
         </button>
 
         <button
           onClick={() => setTab("password")}
-          className={`px-5 py-2.5 rounded-xl font-medium transition-all ${
-            tab === "password"
+          className={`px-5 py-2.5 rounded-xl font-medium transition-all ${tab === "password"
               ? "bg-[#1c54ff] text-white shadow-md"
               : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-          }`}
+            }`}
         >
           Edit Password
         </button>
@@ -175,6 +192,20 @@ function Settings() {
                 className="bg-[#1c54ff] hover:bg-blue-700 transition-colors text-white px-8 py-3 rounded-xl font-semibold shadow-md"
               >
                 Simpan Perubahan
+              </button>
+            </div>
+
+            {/* ZONA BAHAYA (DANGER ZONE) */}
+            <div className="pt-8 border-t border-gray-200 mt-8">
+              <h2 className="text-lg font-bold text-red-600 mb-2">Zona Bahaya</h2>
+              <p className="text-gray-500 text-sm mb-4 leading-relaxed">
+                Menghapus akun akan membuat status Anda menjadi tidak aktif. Anda tidak dapat melakukan transaksi lagi.
+              </p>
+              <button
+                onClick={handleDeleteAccount}
+                className="bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 px-8 py-3 rounded-xl font-semibold transition-colors"
+              >
+                Hapus Akun
               </button>
             </div>
           </div>

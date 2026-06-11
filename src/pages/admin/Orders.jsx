@@ -10,6 +10,22 @@ const statusMap = {
   cancelled: { label: "Dibatalkan", bg: "bg-red-500", text: "text-white" },
 };
 
+const formatAddress = (addressStr) => {
+  if (!addressStr) return "Alamat tidak tersedia";
+  try {
+    const parsed = JSON.parse(addressStr);
+    if (Array.isArray(parsed)) {
+      const primary = parsed.find((addr) => addr.primary) || parsed[0];
+      return primary ? primary.address : "Alamat tidak tersedia";
+    } else if (typeof parsed === "object" && parsed !== null) {
+      return parsed.address || addressStr;
+    }
+  } catch (e) {
+    // Return original string if JSON parsing fails
+  }
+  return addressStr;
+};
+
 export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [transactions, setTransactions] = useState([]);
@@ -129,7 +145,7 @@ export default function AdminOrders() {
     setShowExport(false);
 
     if (format === "csv") {
-      const header = "User,Order ID,Product,Date,Status\n";
+      const header = "Pengguna,ID Pesanan,Produk,Tanggal,Status\n";
       const rows = orders
         .map((o) => {
           const product = o.items?.[0]?.product_name || "-";
@@ -155,10 +171,10 @@ export default function AdminOrders() {
   <Worksheet ss:Name="Orders">
     <Table>
       <Row>
-        <Cell><Data ss:Type="String">User</Data></Cell>
-        <Cell><Data ss:Type="String">Order ID</Data></Cell>
-        <Cell><Data ss:Type="String">Product</Data></Cell>
-        <Cell><Data ss:Type="String">Date</Data></Cell>
+        <Cell><Data ss:Type="String">Pengguna</Data></Cell>
+        <Cell><Data ss:Type="String">ID Pesanan</Data></Cell>
+        <Cell><Data ss:Type="String">Produk</Data></Cell>
+        <Cell><Data ss:Type="String">Tanggal</Data></Cell>
         <Cell><Data ss:Type="String">Status</Data></Cell>
       </Row>`;
       const rows = orders.map(o => {
@@ -189,7 +205,7 @@ export default function AdminOrders() {
       printWindow.document.write(`
         <html>
           <head>
-            <title>Export PDF - Orders</title>
+            <title>Ekspor PDF - Pesanan</title>
             <style>
               body { font-family: Arial, sans-serif; padding: 30px; color: #333; }
               h1 { color: #002d84; margin-bottom: 5px; font-size: 24px; }
@@ -201,15 +217,15 @@ export default function AdminOrders() {
             </style>
           </head>
           <body>
-            <h1>All Orders</h1>
-            <p>FrostMart Orders List - Exported: ${new Date().toLocaleDateString("id-ID")}</p>
+            <h1>Semua Pesanan</h1>
+            <p>Daftar Pesanan FrostMart - Diekspor: ${new Date().toLocaleDateString("id-ID")}</p>
             <table>
               <thead>
                 <tr>
-                  <th>User</th>
-                  <th>Order ID</th>
-                  <th>Product</th>
-                  <th>Date</th>
+                  <th>Pengguna</th>
+                  <th>ID Pesanan</th>
+                  <th>Produk</th>
+                  <th>Tanggal</th>
                   <th>Status</th>
                 </tr>
               </thead>
@@ -251,19 +267,19 @@ export default function AdminOrders() {
       {/* HEADER */}
       <div className="flex justify-between items-start mb-8">
         <div>
-          <h1 className="text-5xl font-bold text-gray-800">Orders</h1>
-          <p className="text-gray-500">Welcome back, Admin.</p>
+          <h1 className="text-5xl font-bold text-gray-800">Pesanan</h1>
+          <p className="text-gray-500">Selamat datang kembali, Admin.</p>
         </div>
         <div className="relative" ref={exportRef}>
           <button
             onClick={() => setShowExport(!showExport)}
             className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-50 transition-all"
           >
-            <FiDownload size={16} /> Export
+            <FiDownload size={16} /> Ekspor
           </button>
           {showExport && (
             <div className="absolute right-0 mt-2 bg-[#0a1e5e] text-white rounded-lg shadow-xl z-50 overflow-hidden min-w-[140px]">
-              <p className="px-4 py-2 font-semibold text-sm border-b border-blue-800">Export As</p>
+              <p className="px-4 py-2 font-semibold text-sm border-b border-blue-800">Ekspor Sebagai</p>
               <button onClick={() => handleExport("pdf")} className="block w-full text-left px-4 py-2 text-sm hover:bg-blue-800 transition">.pdf</button>
               <button onClick={() => handleExport("csv")} className="block w-full text-left px-4 py-2 text-sm hover:bg-blue-800 transition">.csv</button>
               <button onClick={() => handleExport("xlsx")} className="block w-full text-left px-4 py-2 text-sm hover:bg-blue-800 transition">.xlsx</button>
@@ -274,15 +290,15 @@ export default function AdminOrders() {
 
       {/* TABLE */}
       <div className="bg-white rounded-3xl p-8 shadow">
-        <h2 className="text-2xl font-bold mb-6">Recent Orders</h2>
+        <h2 className="text-2xl font-bold mb-6">Pesanan Terbaru</h2>
 
         <table className="w-full">
           <thead>
             <tr className="text-left border-b">
-              <th className="pb-4 font-semibold text-gray-700">User</th>
-              <th className="pb-4 font-semibold text-gray-700">Order ID</th>
-              <th className="pb-4 font-semibold text-gray-700">Product</th>
-              <th className="pb-4 font-semibold text-gray-700">Date</th>
+              <th className="pb-4 font-semibold text-gray-700">Pengguna</th>
+              <th className="pb-4 font-semibold text-gray-700">ID Pesanan</th>
+              <th className="pb-4 font-semibold text-gray-700">Produk</th>
+              <th className="pb-4 font-semibold text-gray-700">Tanggal</th>
               <th className="pb-4 font-semibold text-gray-700">Status</th>
               <th className="pb-4 font-semibold text-gray-700 text-center">Aksi</th>
             </tr>
@@ -300,14 +316,14 @@ export default function AdminOrders() {
             ) : paginatedOrders.length === 0 ? (
               <tr>
                 <td colSpan="6" className="py-20 text-center text-blue-800 font-bold text-xl">
-                  Data Not Found
+                  Data Tidak Ditemukan
                 </td>
               </tr>
             ) : (
               paginatedOrders.map((order) => (
                 <tr key={order.id} className="border-b hover:bg-gray-50 transition-colors">
                   <td className="py-4 font-medium text-gray-800">
-                    {order.user_name || `Customer #${order.user_id}`}
+                    {order.user_name || `Pelanggan #${order.user_id}`}
                   </td>
                   <td className="py-4 text-gray-700">FM-{String(order.id).padStart(3, "0")}</td>
                   <td className="py-4 text-gray-700">{order.items?.[0]?.product_name || "-"}</td>
@@ -354,15 +370,15 @@ export default function AdminOrders() {
           disabled={page <= 1}
           className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-blue-600 px-4 py-2 border border-gray-300 rounded-full disabled:opacity-50 bg-white"
         >
-          <FiChevronLeft size={16} /> Previous
+          <FiChevronLeft size={16} /> Sebelumnya
         </button>
-        <span className="text-sm text-gray-500">Page {page} of {totalPages}</span>
+        <span className="text-sm text-gray-500">Halaman {page} dari {totalPages}</span>
         <button
           onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
           disabled={page >= totalPages}
           className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-blue-600 px-4 py-2 border border-gray-300 rounded-full disabled:opacity-50 bg-white"
         >
-          Next <FiChevronRight size={16} />
+          Selanjutnya <FiChevronRight size={16} />
         </button>
       </div>
 
@@ -389,14 +405,14 @@ export default function AdminOrders() {
             <div className="bg-gray-50 rounded-2xl p-5 mb-6 grid grid-cols-1 md:grid-cols-2 gap-5 text-sm">
               <div>
                 <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-2">Pelanggan</p>
-                <p className="font-bold text-gray-800 text-base">{selectedOrder.user_name || "Customer"}</p>
+                <p className="font-bold text-gray-800 text-base">{selectedOrder.user_name || "Pelanggan"}</p>
                 <p className="text-gray-500 mt-0.5">{selectedOrder.user_email || "-"}</p>
                 <p className="text-gray-500 mt-0.5">{selectedOrder.user_phone || "No. Telepon tidak tersedia"}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-2">Alamat Pengiriman</p>
                 <p className="text-gray-700 leading-relaxed font-medium">
-                  {selectedOrder.user_address || "Alamat tidak tersedia"}
+                  {formatAddress(selectedOrder.shipping_address || selectedOrder.user_address)}
                 </p>
               </div>
             </div>
@@ -440,10 +456,10 @@ export default function AdminOrders() {
                     return (
                       <>
                         <div className="flex justify-between items-center">
-                          <span className="text-gray-500 font-semibold">Metode:</span>
-                          <span className="font-bold text-gray-800 uppercase bg-blue-50 text-[#002d84] px-2.5 py-1 rounded-md text-xs">
-                            {tx?.payment_method || "Transfer / COD"}
-                          </span>
+                           <span className="text-gray-500 font-semibold">Metode:</span>
+                           <span className="font-bold text-gray-800 uppercase bg-blue-50 text-[#002d84] px-2.5 py-1 rounded-md text-xs">
+                             {tx?.payment_method || "Transfer / COD"}
+                           </span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-gray-500 font-semibold">Pembayaran:</span>
@@ -461,15 +477,35 @@ export default function AdminOrders() {
                                   : "bg-yellow-100 text-yellow-700 border-yellow-200"
                               }`}
                             >
-                              <option value="pending">Menunggu (Pending)</option>
-                              <option value="paid">Lunas (Paid)</option>
-                              <option value="failed">Gagal (Failed)</option>
-                              <option value="refunded">Kembali (Refunded)</option>
+                              <option value="pending">Menunggu</option>
+                              <option value="paid">Lunas</option>
+                              <option value="failed">Gagal</option>
+                              <option value="refunded">Dikembalikan</option>
                             </select>
                           ) : (
                             <span className="font-semibold text-gray-500">-</span>
                           )}
                         </div>
+                        {tx?.payment_proof_url && (
+                          <div className="mt-4 pt-3 border-t border-gray-100 space-y-2">
+                            <span className="text-gray-500 font-semibold text-xs uppercase tracking-wider block">Bukti Pembayaran:</span>
+                            <a 
+                              href={tx.payment_proof_url} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="block group overflow-hidden rounded-xl border border-gray-200 bg-white hover:border-blue-500 transition relative"
+                            >
+                              <img
+                                src={tx.payment_proof_url}
+                                alt="Bukti Pembayaran"
+                                className="w-full max-h-48 object-contain mx-auto group-hover:scale-[1.02] transition duration-200"
+                              />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-bold transition duration-200">
+                                Klik untuk Memperbesar 🔍
+                              </div>
+                            </a>
+                          </div>
+                        )}
                       </>
                     );
                   })()}
@@ -477,34 +513,37 @@ export default function AdminOrders() {
               </div>
 
               {/* Total and Order Status */}
-              <div className="flex flex-col justify-between items-end bg-[#002d84]/5 border border-[#002d84]/10 rounded-2xl p-5 shadow-sm">
-                <div className="w-full text-right">
-                  <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Total Transaksi</p>
-                  <p className="text-2xl font-extrabold text-[#002d84]">
-                    Rp {Number(selectedOrder.total_price).toLocaleString("id-ID")}
-                  </p>
-                </div>
-                
-                <div className="w-full mt-4 flex justify-between items-center text-sm border-t border-[#002d84]/10 pt-3">
-                  <span className="text-gray-500 font-semibold">Status Pesanan:</span>
-                  <select
-                    value={selectedOrder.status}
-                    onChange={(e) => handleStatusChange(selectedOrder.id, e.target.value)}
-                    className={`px-3 py-1.5 rounded-full font-bold text-xs border outline-none cursor-pointer ${
-                      selectedOrder.status === "completed"
-                        ? "bg-green-500 text-white border-green-600"
-                        : selectedOrder.status === "paid"
-                        ? "bg-[#002d84] text-white border-blue-900"
-                        : selectedOrder.status === "cancelled"
-                        ? "bg-red-500 text-white border-red-600"
-                        : "bg-yellow-500 text-white border-yellow-600"
-                    }`}
-                  >
-                    <option value="pending">Menunggu</option>
-                    <option value="paid">Proses</option>
-                    <option value="completed">Selesai</option>
-                    <option value="cancelled">Dibatalkan</option>
-                  </select>
+              <div className="flex flex-col self-start w-full">
+                <h4 className="font-bold text-gray-800 mb-3 text-base">Status & Ringkasan Transaksi</h4>
+                <div className="bg-gray-50 border border-gray-100 rounded-2xl p-5 shadow-sm space-y-5">
+                  <div>
+                    <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Total Transaksi</p>
+                    <p className="text-3xl font-black text-[#002d84] tracking-tight">
+                      Rp {Number(selectedOrder.total_price).toLocaleString("id-ID")}
+                    </p>
+                  </div>
+                  
+                  <div className="pt-4 border-t border-gray-200/60 flex justify-between items-center text-sm">
+                    <span className="text-gray-500 font-semibold">Status Pesanan:</span>
+                    <select
+                      value={selectedOrder.status}
+                      onChange={(e) => handleStatusChange(selectedOrder.id, e.target.value)}
+                      className={`px-3 py-1.5 rounded-full font-bold text-xs border outline-none cursor-pointer transition-all duration-200 hover:scale-[1.03] ${
+                        selectedOrder.status === "completed"
+                          ? "bg-green-500 text-white border-green-600"
+                          : selectedOrder.status === "paid"
+                          ? "bg-[#002d84] text-white border-blue-900"
+                          : selectedOrder.status === "cancelled"
+                          ? "bg-red-500 text-white border-red-600"
+                          : "bg-yellow-500 text-white border-yellow-600"
+                      }`}
+                    >
+                      <option value="pending">Menunggu</option>
+                      <option value="paid">Proses</option>
+                      <option value="completed">Selesai</option>
+                      <option value="cancelled">Dibatalkan</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>

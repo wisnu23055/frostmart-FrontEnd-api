@@ -43,11 +43,11 @@ export default function Customers() {
     setShowExport(false);
 
     if (format === "csv") {
-      const header = "User,Status,Joined,Total Orders\n";
+      const header = "Pengguna,Status,Bergabung,Total Pesanan\n";
       const rows = customers
         .map((c) => {
           const joined = formatDateOnly(c.created_at);
-          const status = (c.total_orders || 0) > 0 ? "Active" : "Inactive";
+          const status = (c.total_orders || 0) > 0 ? "Aktif" : "Tidak Aktif";
           return `"${c.name}","${status}","${joined}",${c.total_orders || 0}`;
         })
         .join("\n");
@@ -69,15 +69,15 @@ export default function Customers() {
   <Worksheet ss:Name="Customers">
     <Table>
       <Row>
-        <Cell><Data ss:Type="String">User</Data></Cell>
+        <Cell><Data ss:Type="String">Pengguna</Data></Cell>
         <Cell><Data ss:Type="String">Status</Data></Cell>
-        <Cell><Data ss:Type="String">Joined</Data></Cell>
-        <Cell><Data ss:Type="String">Total Orders</Data></Cell>
+        <Cell><Data ss:Type="String">Bergabung</Data></Cell>
+        <Cell><Data ss:Type="String">Total Pesanan</Data></Cell>
       </Row>`;
       const rows = customers.map(c => `
       <Row>
         <Cell><Data ss:Type="String">${c.name}</Data></Cell>
-        <Cell><Data ss:Type="String">${(c.total_orders || 0) > 0 ? "Active" : "Inactive"}</Data></Cell>
+        <Cell><Data ss:Type="String">${(c.total_orders || 0) > 0 ? "Aktif" : "Tidak Aktif"}</Data></Cell>
         <Cell><Data ss:Type="String">${formatDateOnly(c.created_at)}</Data></Cell>
         <Cell><Data ss:Type="Number">${c.total_orders || 0}</Data></Cell>
       </Row>`).join("");
@@ -97,7 +97,7 @@ export default function Customers() {
       printWindow.document.write(`
         <html>
           <head>
-            <title>Export PDF - Customers</title>
+            <title>Ekspor PDF - Pelanggan</title>
             <style>
               body { font-family: Arial, sans-serif; padding: 30px; color: #333; }
               h1 { color: #002d84; margin-bottom: 5px; font-size: 24px; }
@@ -109,22 +109,22 @@ export default function Customers() {
             </style>
           </head>
           <body>
-            <h1>All Customers</h1>
-            <p>FrostMart Customers List - Exported: ${new Date().toLocaleDateString("id-ID")}</p>
+            <h1>Semua Pelanggan</h1>
+            <p>Daftar Pelanggan FrostMart - Diekspor: ${new Date().toLocaleDateString("id-ID")}</p>
             <table>
               <thead>
                 <tr>
-                  <th>User</th>
+                  <th>Pengguna</th>
                   <th>Status</th>
-                  <th>Joined</th>
-                  <th>Total Orders</th>
+                  <th>Bergabung</th>
+                  <th>Total Pesanan</th>
                 </tr>
               </thead>
               <tbody>
                 ${customers.map(c => `
                   <tr>
                     <td>${c.name}</td>
-                    <td>${(c.total_orders || 0) > 0 ? "Active" : "Inactive"}</td>
+                    <td>${(c.total_orders || 0) > 0 ? "Aktif" : "Tidak Aktif"}</td>
                     <td>${formatDateOnly(c.created_at)}</td>
                     <td>${c.total_orders || 0}</td>
                   </tr>
@@ -149,19 +149,19 @@ export default function Customers() {
       {/* HEADER */}
       <div className="flex justify-between items-start mb-8">
         <div>
-          <h1 className="text-5xl font-bold text-gray-800">Customers</h1>
-          <p className="text-gray-500">Welcome back, Admin.</p>
+          <h1 className="text-5xl font-bold text-gray-800">Pelanggan</h1>
+          <p className="text-gray-500">Selamat datang kembali, Admin.</p>
         </div>
         <div className="relative" ref={exportRef}>
           <button
             onClick={() => setShowExport(!showExport)}
             className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-50 transition-all"
           >
-            <FiDownload size={16} /> Export
+            <FiDownload size={16} /> Ekspor
           </button>
           {showExport && (
             <div className="absolute right-0 mt-2 bg-[#0a1e5e] text-white rounded-lg shadow-xl z-50 overflow-hidden min-w-[140px]">
-              <p className="px-4 py-2 font-semibold text-sm border-b border-blue-800">Export As</p>
+              <p className="px-4 py-2 font-semibold text-sm border-b border-blue-800">Ekspor Sebagai</p>
               <button onClick={() => handleExport("pdf")} className="block w-full text-left px-4 py-2 text-sm hover:bg-blue-800 transition">.pdf</button>
               <button onClick={() => handleExport("csv")} className="block w-full text-left px-4 py-2 text-sm hover:bg-blue-800 transition">.csv</button>
               <button onClick={() => handleExport("xlsx")} className="block w-full text-left px-4 py-2 text-sm hover:bg-blue-800 transition">.xlsx</button>
@@ -172,15 +172,15 @@ export default function Customers() {
 
       {/* TABLE */}
       <div className="bg-white rounded-3xl p-8 shadow">
-        <h2 className="text-2xl font-bold mb-6">All Customers</h2>
+        <h2 className="text-2xl font-bold mb-6">Semua Pelanggan</h2>
 
         <table className="w-full">
           <thead>
             <tr className="text-left border-b">
-              <th className="pb-4 font-semibold text-gray-700">User</th>
+              <th className="pb-4 font-semibold text-gray-700">Pengguna</th>
               <th className="pb-4 font-semibold text-gray-700">Status</th>
-              <th className="pb-4 font-semibold text-gray-700">Joined</th>
-              <th className="pb-4 font-semibold text-gray-700">Total Orders</th>
+              <th className="pb-4 font-semibold text-gray-700">Bergabung</th>
+              <th className="pb-4 font-semibold text-gray-700">Total Pesanan</th>
             </tr>
           </thead>
           <tbody>
@@ -196,7 +196,7 @@ export default function Customers() {
             ) : customers.length === 0 ? (
               <tr>
                 <td colSpan="4" className="py-20 text-center text-blue-800 font-bold text-xl">
-                  Data Not Found
+                  Data Tidak Ditemukan
                 </td>
               </tr>
             ) : (
@@ -214,7 +214,7 @@ export default function Customers() {
                         }`}
                         style={{ textAlign: "center" }}
                       >
-                        {isActive ? "Active" : "Inactive"}
+                        {isActive ? "Aktif" : "Tidak Aktif"}
                       </span>
                     </td>
                     <td className="py-4 text-gray-700">
@@ -238,15 +238,15 @@ export default function Customers() {
           disabled={page <= 1}
           className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-blue-600 px-4 py-2 border border-gray-300 rounded-full disabled:opacity-50 bg-white"
         >
-          <FiChevronLeft size={16} /> Previous
+          <FiChevronLeft size={16} /> Sebelumnya
         </button>
-        <span className="text-sm text-gray-500">Page {page} of {totalPages}</span>
+        <span className="text-sm text-gray-500">Halaman {page} dari {totalPages}</span>
         <button
           onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
           disabled={page >= totalPages}
           className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-blue-600 px-4 py-2 border border-gray-300 rounded-full disabled:opacity-50 bg-white"
         >
-          Next <FiChevronRight size={16} />
+          Selanjutnya <FiChevronRight size={16} />
         </button>
       </div>
     </div>

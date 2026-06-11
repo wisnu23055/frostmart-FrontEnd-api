@@ -69,9 +69,9 @@ function ProfileSidebar() {
         </NavLink>
 
         {user?.role === "admin" && (
-          <NavLink to="/profile/register-store" className={menuClass}>
+          <NavLink to="/profile/store-profile" className={menuClass}>
             <FiBriefcase />
-            Daftarkan Toko
+            Profil Toko
           </NavLink>
         )}
 

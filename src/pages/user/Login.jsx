@@ -92,9 +92,9 @@ function Login() {
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-blue-500 flex justify-center items-center relative overflow-hidden">
       <div className="bg-white rounded-3xl shadow-xl w-full max-w-sm p-6 z-10">
         <h1 className="text-4xl font-bold mb-3 text-gray-700">
-          Login to your Account
+          Masuk ke Akun Anda
         </h1>
-        <p className="text-gray-500 mb-6">Welcome back to FrostMart</p>
+        <p className="text-gray-500 mb-6">Selamat datang kembali di FrostMart</p>
 
         {errorMsg && (
           <div className="bg-red-100 text-red-600 p-3 rounded-xl mb-4 text-sm font-medium text-center border border-red-200">
@@ -121,7 +121,7 @@ function Login() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter password"
+              placeholder="Masukkan password"
               required
               className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-[#1c54ff] transition-all"
             />
@@ -129,13 +129,13 @@ function Login() {
 
           <div className="flex justify-between items-center text-sm">
             <label className="flex items-center gap-2">
-              <input type="checkbox" /> Remember me
+              <input type="checkbox" /> Ingat saya
             </label>
             <button
               type="button"
               className="text-[#1c54ff] hover:text-blue-800 transition"
             >
-              Forgot Password?
+              Lupa Password?
             </button>
           </div>
 
@@ -146,18 +146,18 @@ function Login() {
               isLoading ? "bg-blue-400 cursor-not-allowed" : "bg-[#1c54ff] hover:bg-blue-700"
             }`}
           >
-            {isLoading ? "Loading..." : "Login"}
+            {isLoading ? "Memproses..." : "Masuk"}
           </button>
         </form>
 
         <p className="text-center mt-8 text-gray-600">
-          Not registered yet?{" "}
+          Belum punya akun?{" "}
           <Link
             to="/register"
             onClick={handleDaftarClick}
             className="font-semibold text-[#1c54ff] hover:text-blue-800 transition"
           >
-            Create an account
+            Daftar akun baru
           </Link>
         </p>
       </div>

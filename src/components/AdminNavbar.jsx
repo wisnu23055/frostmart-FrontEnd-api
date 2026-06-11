@@ -5,7 +5,7 @@ import {
   FiUser,
 } from "react-icons/fi";
 
-import logo from "../assets/images/logo frostmart.png";
+import logo from "../assets/images/logo_frostmart.png";
 
 function AdminNavbar() {
   return (
@@ -31,7 +31,7 @@ function AdminNavbar() {
 
         <input
           type="text"
-          placeholder="Search"
+          placeholder="Cari..."
           className="w-full border rounded-full px-5 py-2 outline-none"
         />
 
@@ -41,10 +41,10 @@ function AdminNavbar() {
 
       {/* ICON */}
       <div className="flex items-center gap-6 text-2xl text-gray-600">
-        <Link to="/menu" title="Web Product" className="hover:text-blue-700 transition-colors">
+        <Link to="/menu" title="Produk Web" className="hover:text-blue-700 transition-colors">
           <FiShoppingCart />
         </Link>
-        <Link to="/profile" title="Profile Menu" className="hover:text-blue-700 transition-colors">
+        <Link to="/profile" title="Menu Profil" className="hover:text-blue-700 transition-colors">
           <FiUser />
         </Link>
       </div>

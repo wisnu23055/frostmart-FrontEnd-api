@@ -39,13 +39,13 @@ function Register() {
 
     // VALIDASI PASSWORD
     if (formData.password !== formData.confirmPassword) {
-      setErrorMsg("Password dan Confirm Password harus sama!");
+      setErrorMsg("Password dan Konfirmasi Password harus sama!");
       return;
     }
 
     // VALIDASI TERMS
     if (!formData.agreeTerms) {
-      setErrorMsg("Kamu harus menyetujui Terms of Service dan Privacy Policy!");
+      setErrorMsg("Kamu harus menyetujui Syarat dan Ketentuan serta Kebijakan Privasi!");
       return;
     }
 
@@ -107,12 +107,11 @@ function Register() {
           </h1>
 
           <p className="text-2xl font-semibold mb-4">
-            Freshness preserved, quality delivered.
+            Kesegaran terjaga, kualitas terjamin.
           </p>
 
           <p className="text-lg text-gray-200">
-            Experience precision-chilled gourmet logistics
-tailored for culinary excellence.
+            Rasakan layanan logistik gourmet dengan pendinginan presisi untuk keunggulan kuliner.
           </p>
         </div>
       </div>
@@ -123,11 +122,11 @@ tailored for culinary excellence.
         <div className="w-full max-w-md text-white">
 
           <h2 className="text-4xl font-bold mb-3">
-            Create an Account
+            Daftar Akun Baru
           </h2>
 
           <p className="mb-10 text-lg text-blue-100">
-            Join FrostMart today.
+            Bergabung dengan FrostMart hari ini.
           </p>
 
           {errorMsg && (
@@ -145,7 +144,7 @@ tailored for culinary excellence.
             {/* FULL NAME */}
             <div>
               <label className="block mb-2 font-medium">
-                Full Name
+                Nama Lengkap
               </label>
 
               <div className="flex items-center bg-white rounded-lg px-4 py-3">
@@ -156,7 +155,7 @@ tailored for culinary excellence.
                   name="fullName"
                   value={formData.fullName}
                   onChange={handleChange}
-                  placeholder="Enter your name"
+                  placeholder="Masukkan nama lengkap Anda"
                   required
                   className="w-full outline-none text-gray-700"
                 />
@@ -177,7 +176,7 @@ tailored for culinary excellence.
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="Enter your email"
+                  placeholder="Masukkan email Anda"
                   required
                   className="w-full outline-none text-gray-700"
                 />
@@ -198,7 +197,7 @@ tailored for culinary excellence.
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Create password"
+                  placeholder="Buat password"
                   required
                   className="w-full outline-none text-gray-700"
                 />
@@ -208,7 +207,7 @@ tailored for culinary excellence.
             {/* CONFIRM PASSWORD */}
             <div>
               <label className="block mb-2 font-medium">
-                Confirm Password
+                Konfirmasi Password
               </label>
 
               <div className="flex items-center bg-white rounded-lg px-4 py-3">
@@ -219,7 +218,7 @@ tailored for culinary excellence.
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  placeholder="Repeat your password"
+                  placeholder="Ulangi password Anda"
                   required
                   className="w-full outline-none text-gray-700"
                 />
@@ -237,13 +236,13 @@ tailored for culinary excellence.
               />
 
               <p className="text-sm text-blue-100 leading-relaxed">
-                I agree to the{" "}
+                Saya menyetujui{" "}
                 <span className="underline cursor-pointer font-medium">
-                  Terms of Service
+                  Syarat dan Ketentuan
                 </span>{" "}
-                and{" "}
+                dan{" "}
                 <span className="underline cursor-pointer font-medium">
-                  Privacy Policy
+                  Kebijakan Privasi
                 </span>
               </p>
             </div>
@@ -254,20 +253,20 @@ tailored for culinary excellence.
               disabled={isLoading}
               className="w-full bg-blue-900 hover:bg-blue-950 transition py-4 rounded-lg font-semibold text-lg disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              {isLoading ? "Loading..." : "Create Account"}
+              {isLoading ? "Memproses..." : "Daftar Akun"}
             </button>
 
           </form>
 
           {/* LOGIN LINK */}
           <p className="text-center mt-8">
-            Already have an account?{" "}
+            Sudah punya akun?{" "}
 
             <Link
               to="/login"
               className="font-semibold underline"
             >
-              Login here
+              Masuk di sini
             </Link>
           </p>
 

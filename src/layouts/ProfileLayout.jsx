@@ -19,7 +19,7 @@ export default function ProfileLayout() {
   ];
 
   if (user?.role === "admin") {
-    navItems.push({ name: 'Daftarkan Toko', path: '/profile/register-store', icon: <FiBriefcase /> });
+    navItems.push({ name: 'Profil Toko', path: '/profile/store-profile', icon: <FiBriefcase /> });
   }
 
   // 2. Buat fungsi handleLogout

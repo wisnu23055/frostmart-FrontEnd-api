@@ -10,34 +10,34 @@ function AdminSidebar() {
     <div className="w-56 bg-[#002d84] text-white min-h-screen pt-8 pr-4 flex-shrink-0 transition-all select-none">
 
       <p className="text-white/60 text-xs font-bold uppercase tracking-wider mb-3 pl-6">
-        Overview
+        Ringkasan
       </p>
 
       <div className="flex flex-col gap-1.5 mb-8">
         <NavLink to="/admin" end className={linkClass}>
-          Dashboard
+          Dasbor
         </NavLink>
         <NavLink to="/admin/analytics" className={linkClass}>
-          Analytics
+          Analisis
         </NavLink>
       </div>
 
       <p className="text-white/60 text-xs font-bold uppercase tracking-wider mb-3 pl-6">
-        Commerce
+        Penjualan
       </p>
 
       <div className="flex flex-col gap-1.5">
         <NavLink to="/admin/orders" className={linkClass}>
-          Orders
+          Pesanan
         </NavLink>
         <NavLink to="/admin/products" className={linkClass}>
-          Products
+          Produk
         </NavLink>
         <NavLink to="/admin/customers" className={linkClass}>
-          Customers
+          Pelanggan
         </NavLink>
         <NavLink to="/admin/invoice" className={linkClass}>
-          Invoice
+          Faktur
         </NavLink>
       </div>
 

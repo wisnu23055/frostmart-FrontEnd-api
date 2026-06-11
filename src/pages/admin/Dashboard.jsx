@@ -161,7 +161,7 @@ function Dashboard() {
       <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 mb-8">
         <div className="flex justify-between items-start mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">Monthly Overview</h2>
+            <h2 className="text-2xl font-bold text-gray-800">Ikhtisar Bulanan</h2>
             <p className="text-gray-500 text-sm">
               {new Date().toLocaleString("id-ID", { month: "long", year: "numeric" })}
             </p>
@@ -200,7 +200,7 @@ function Dashboard() {
               ) : (
                 recentOrders.map((order, index) => (
                   <tr key={order.id || index} className="border-b border-gray-50 text-gray-700 text-sm font-medium hover:bg-gray-50/50 transition">
-                    <td className="py-4">{order.user_name || `Customer #${order.user_id}`}</td>
+                    <td className="py-4">{order.user_name || `Pelanggan #${order.user_id}`}</td>
                     <td>FM-{String(order.id).padStart(3, "0")}</td>
                     <td>{order.items?.[0]?.product_name || "-"}</td>
                     <td>{getStatusBadge(order.status)}</td>

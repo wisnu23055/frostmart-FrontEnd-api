@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FiEye, FiTarget, FiAward, FiTruck, FiShield, FiHeart, FiMapPin, FiPhone, FiMail, FiUser, FiTag } from "react-icons/fi";
+import { FiEye, FiTarget, FiAward, FiTruck, FiShield, FiHeart, FiMapPin, FiPhone, FiUser, FiTag } from "react-icons/fi";
 import axiosInstance from "../../api/axiosInstance";
 
 export default function About() {
@@ -20,10 +20,10 @@ export default function About() {
     fetchActiveStore();
   }, []);
 
-  const storeName = storeData?.store_name?.trim() || "AIDA FROZEN";
-  const storeAddress = storeData?.address?.trim() || "Jl. Frozen Food Premium No. 12, Kota Jakarta";
-  const storePhone = storeData?.phone?.trim() || "+62 812-3456-7890";
-  const storeOwner = storeData?.owner_name?.trim() || "AIDA FROZEN Team";
+  const storeName = storeData?.store_name?.trim() || "FrostMart";
+  const storeAddress = storeData?.address?.trim() || "Saranjana, Jln Apel No 123";
+  const storePhone = storeData?.phone?.trim() || "+62 812-3456-7891011";
+  const storeOwner = storeData?.owner_name?.trim() || "John";
   const storeType = storeData?.store_type?.trim() || "Warung / Retail";
   const storeCategory = storeData?.category?.trim() || "Frozen Food";
   const storeImage = storeData?.product_proof_1_url || "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=600&auto=format&fit=crop";
@@ -74,7 +74,7 @@ export default function About() {
       <section className="max-w-5xl mx-auto px-6 mt-20 text-center">
         <p className="text-[#1c54ff] font-bold text-xs uppercase tracking-widest mb-2">Nilai Utama</p>
         <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-12">Mengapa Memilih Kami?</h2>
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             {
@@ -119,9 +119,9 @@ export default function About() {
           <div className="flex-1 space-y-6">
             <h2 className="text-3xl font-black text-[#11327c]">Toko Utama Kami</h2>
             <p className="text-gray-600 text-sm leading-relaxed">
-              FrostMart dioperasikan secara resmi dari gerai utama **{storeName}**. Kami melayani pembelian retail maupun grosir untuk menyuplai berbagai kebutuhan rumah tangga hingga pelaku bisnis kuliner lokal di wilayah kami.
+              FrostMart dioperasikan secara resmi dari gerai utama <strong className="font-bold">{storeName}</strong>. Kami melayani pembelian retail maupun grosir untuk menyuplai berbagai kebutuhan rumah tangga hingga pelaku bisnis kuliner lokal di wilayah kami.
             </p>
-            
+
             <div className="space-y-4 text-sm text-gray-700 font-medium">
               <div className="flex items-start gap-3">
                 <FiMapPin className="text-blue-600 shrink-0 mt-1" size={20} />
@@ -153,7 +153,7 @@ export default function About() {
               </div>
             </div>
           </div>
-          
+
           <div className="w-full md:w-[350px] shrink-0 aspect-[4/3] bg-gray-50 border border-gray-100 rounded-3xl overflow-hidden shadow-inner flex items-center justify-center relative">
             <img
               src={storeImage}

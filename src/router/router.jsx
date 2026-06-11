@@ -26,7 +26,7 @@ import OrderDetail from "../pages/user/OrderDetail";
 import Settings from "../pages/user/Settings";
 import Address from "../pages/user/Address";
 import PaymentSuccess from "../pages/user/PaymentSuccess";
-import RegisterStore from "../pages/user/RegisterStore";
+import ProfileStore from "../pages/user/ProfileStore";
 import About from "../pages/user/About";
 
 // =========================
@@ -117,8 +117,8 @@ const router = createBrowserRouter([
             element: <Address />,
           },
           {
-            path: "register-store",
-            element: <RegisterStore />,
+            path: "store-profile",
+            element: <ProfileStore />,
           },
         ],
       },

@@ -144,14 +144,14 @@ export default function AddProduct() {
       <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
         <Link to="/admin" className="hover:text-blue-600 hover:underline transition-colors">Admin</Link>
         <span>›</span>
-        <Link to="/admin/products" className="hover:text-blue-600 hover:underline transition-colors">Products</Link>
+        <Link to="/admin/products" className="hover:text-blue-600 hover:underline transition-colors">Produk</Link>
         <span>›</span>
-        <span className="font-bold text-gray-800">Add New</span>
+        <span className="font-bold text-gray-800">Tambah Baru</span>
       </div>
 
       {/* HEADER */}
-      <h1 className="text-3xl font-bold text-gray-800 mb-1">Add New Product</h1>
-      <p className="text-gray-500 mb-8">Enter the details below to add a new frozen product to the catalog.</p>
+      <h1 className="text-3xl font-bold text-gray-800 mb-1">Tambah Produk Baru</h1>
+      <p className="text-gray-500 mb-8">Masukkan detail di bawah ini untuk menambahkan produk beku baru ke katalog.</p>
 
       <form onSubmit={handleSubmit}>
         <div className="bg-white rounded-2xl p-8 shadow">
@@ -161,14 +161,14 @@ export default function AddProduct() {
             <div className="lg:col-span-2 space-y-6">
               {/* Product Name */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Product Name</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Nama Produk</label>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                  placeholder="e.g. Premium Pork Gyoza 500g"
+                  placeholder="mis. Gyoza Sapi Premium 500g"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
                 />
               </div>
@@ -176,27 +176,27 @@ export default function AddProduct() {
               {/* Category + SKU */}
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Kategori</label>
                   <select
                     name="category"
                     value={formData.category}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white transition"
                   >
-                    <option value="">Select Category</option>
+                    <option value="">Pilih Kategori</option>
                     {categories.map((cat) => (
                       <option key={cat} value={cat}>{cat}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">SKU Code</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Kode SKU</label>
                   <input
                     type="text"
                     name="sku_code"
                     value={formData.sku_code}
                     onChange={handleInputChange}
-                    placeholder="E.G. GY-PRK-500"
+                    placeholder="MIS. GY-PRK-500"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
                   />
                 </div>
@@ -205,7 +205,7 @@ export default function AddProduct() {
               {/* Price + Stock */}
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Price</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Harga</label>
                   <div className="relative">
                     <span className="absolute left-4 top-3 text-gray-500">Rp</span>
                     <input
@@ -220,7 +220,7 @@ export default function AddProduct() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Stock Quantity</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Jumlah Stok</label>
                   <input
                     type="number"
                     name="stock"
@@ -235,13 +235,13 @@ export default function AddProduct() {
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Product Description</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Deskripsi Produk</label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
                   rows="4"
-                  placeholder="Describe the product, ingredients, and cooking instructions..."
+                  placeholder="Deskripsikan produk, bahan-bahan, dan petunjuk memasak..."
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition"
                 />
               </div>
@@ -251,7 +251,7 @@ export default function AddProduct() {
             <div className="space-y-6">
               {/* Image Upload */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Product Image (Main)</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Gambar Produk (Utama)</label>
                 <div
                   onClick={() => fileInputRef.current?.click()}
                   onDragEnter={handleDrag}
@@ -273,8 +273,8 @@ export default function AddProduct() {
                   ) : (
                     <>
                       <FiUploadCloud className="text-blue-600 mb-3" size={40} />
-                      <p className="text-blue-600 font-semibold text-sm">Click to upload or drag and drop</p>
-                      <p className="text-gray-400 text-xs mt-1">SVG, PNG, JPG or GIF (Max 5MB)</p>
+                      <p className="text-blue-600 font-semibold text-sm">Klik untuk mengunggah atau seret dan lepas</p>
+                      <p className="text-gray-400 text-xs mt-1">SVG, PNG, JPG atau GIF (Maks. 5MB)</p>
                     </>
                   )}
                 </div>
@@ -289,7 +289,7 @@ export default function AddProduct() {
 
               {/* Additional Images (2, 3, 4) */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Additional Images (Optional)</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Gambar Tambahan (Opsional)</label>
                 <div className="grid grid-cols-3 gap-3">
                   {[
                     { file: imageFile2, preview: imagePreview2, setFile: setImageFile2, setPreview: setImagePreview2, ref: fileInputRef2, label: "Foto 2" },
@@ -336,7 +336,7 @@ export default function AddProduct() {
 
               {/* Visibility Status */}
               <div className="bg-gray-50 rounded-xl p-5">
-                <h3 className="font-semibold text-gray-700 mb-4">Visibility Status</h3>
+                <h3 className="font-semibold text-gray-700 mb-4">Status Visibilitas</h3>
                 <label className="flex items-start gap-3 cursor-pointer mb-4">
                   <input
                     type="radio"
@@ -347,8 +347,8 @@ export default function AddProduct() {
                     className="mt-1 w-4 h-4 text-blue-600"
                   />
                   <div>
-                    <p className="font-semibold text-gray-800 text-sm">Active</p>
-                    <p className="text-gray-500 text-xs">Product will be visible to customers immediately.</p>
+                    <p className="font-semibold text-gray-800 text-sm">Aktif</p>
+                    <p className="text-gray-500 text-xs">Produk akan langsung terlihat oleh pelanggan.</p>
                   </div>
                 </label>
                 <label className="flex items-start gap-3 cursor-pointer">
@@ -361,8 +361,8 @@ export default function AddProduct() {
                     className="mt-1 w-4 h-4 text-blue-600"
                   />
                   <div>
-                    <p className="font-semibold text-gray-800 text-sm">Draft</p>
-                    <p className="text-gray-500 text-xs">Save as draft. Will not be visible in store.</p>
+                    <p className="font-semibold text-gray-800 text-sm">Draf</p>
+                    <p className="text-gray-500 text-xs">Simpan sebagai draf. Tidak akan terlihat di toko.</p>
                   </div>
                 </label>
               </div>
@@ -377,7 +377,7 @@ export default function AddProduct() {
             onClick={() => navigate("/admin/products")}
             className="px-6 py-3 text-gray-700 font-medium hover:bg-gray-200 rounded-lg transition"
           >
-            Cancel
+            Batal
           </button>
           <button
             type="submit"
@@ -386,7 +386,7 @@ export default function AddProduct() {
               isSubmitting ? "bg-blue-400 cursor-not-allowed" : "bg-[#0a1e5e] hover:bg-blue-900"
             }`}
           >
-            {isSubmitting ? (loadingStep || "Menyimpan...") : "Save & Publish Product"}
+            {isSubmitting ? (loadingStep || "Menyimpan...") : "Simpan & Publikasikan Produk"}
           </button>
         </div>
       </form>

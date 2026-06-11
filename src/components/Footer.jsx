@@ -1,5 +1,5 @@
 import { FaInstagram, FaFacebookF, FaTwitter } from "react-icons/fa";
-import logo from "../assets/images/logo frostmart.png";
+import logo from "../assets/images/logo_frostmart.png";
 
 function Footer() {
   return (

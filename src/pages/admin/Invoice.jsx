@@ -9,6 +9,22 @@ const statusMap = {
   cancelled: { label: "Dibatalkan", bg: "bg-red-500", text: "text-white" },
 };
 
+const formatAddress = (addressStr) => {
+  if (!addressStr) return "Alamat tidak tersedia";
+  try {
+    const parsed = JSON.parse(addressStr);
+    if (Array.isArray(parsed)) {
+      const primary = parsed.find((addr) => addr.primary) || parsed[0];
+      return primary ? primary.address : "Alamat tidak tersedia";
+    } else if (typeof parsed === "object" && parsed !== null) {
+      return parsed.address || addressStr;
+    }
+  } catch (e) {
+    // Return original string if JSON parsing fails
+  }
+  return addressStr;
+};
+
 export default function Invoice() {
   const [transactions, setTransactions] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -57,7 +73,7 @@ export default function Invoice() {
 
     return {
       id: order.id,
-      user: order.user_name || `Customer #${order.user_id}`,
+      user: order.user_name || `Pelanggan #${order.user_id}`,
       orderCode: `FM-${String(order.id).padStart(3, "0")}`,
       status: order.status,
       invoiceNumber,
@@ -79,7 +95,7 @@ export default function Invoice() {
     setShowExport(false);
 
     if (format === "csv") {
-      const header = "User,Order,Status,Invoice,Payment Status\n";
+      const header = "Pengguna,Pesanan,Status,Faktur,Status Pembayaran\n";
       const rows = invoiceData
         .map((inv) => `"${inv.user}","${inv.orderCode}","${inv.status}","${inv.invoiceNumber}","${inv.paymentStatus}"`)
         .join("\n");
@@ -101,11 +117,11 @@ export default function Invoice() {
   <Worksheet ss:Name="Invoices">
     <Table>
       <Row>
-        <Cell><Data ss:Type="String">User</Data></Cell>
-        <Cell><Data ss:Type="String">Order</Data></Cell>
+        <Cell><Data ss:Type="String">Pengguna</Data></Cell>
+        <Cell><Data ss:Type="String">Pesanan</Data></Cell>
         <Cell><Data ss:Type="String">Status</Data></Cell>
-        <Cell><Data ss:Type="String">Invoice</Data></Cell>
-        <Cell><Data ss:Type="String">Payment Status</Data></Cell>
+        <Cell><Data ss:Type="String">Faktur</Data></Cell>
+        <Cell><Data ss:Type="String">Status Pembayaran</Data></Cell>
       </Row>`;
       const rows = invoiceData.map(inv => `
       <Row>
@@ -131,7 +147,7 @@ export default function Invoice() {
       printWindow.document.write(`
         <html>
           <head>
-            <title>Export PDF - Invoices</title>
+            <title>Ekspor PDF - Faktur</title>
             <style>
               body { font-family: Arial, sans-serif; padding: 30px; color: #333; }
               h1 { color: #002d84; margin-bottom: 5px; font-size: 24px; }
@@ -143,16 +159,16 @@ export default function Invoice() {
             </style>
           </head>
           <body>
-            <h1>All Invoices</h1>
-            <p>FrostMart Invoices List - Exported: ${new Date().toLocaleDateString("id-ID")}</p>
+            <h1>Semua Faktur</h1>
+            <p>Daftar Faktur FrostMart - Diekspor: ${new Date().toLocaleDateString("id-ID")}</p>
             <table>
               <thead>
                 <tr>
-                  <th>User</th>
-                  <th>Order</th>
+                  <th>Pengguna</th>
+                  <th>Pesanan</th>
                   <th>Status</th>
-                  <th>Invoice</th>
-                  <th>Payment Status</th>
+                  <th>Faktur</th>
+                  <th>Status Pembayaran</th>
                 </tr>
               </thead>
               <tbody>
@@ -189,19 +205,19 @@ export default function Invoice() {
       {/* HEADER */}
       <div className="flex justify-between items-start mb-8">
         <div>
-          <h1 className="text-5xl font-bold text-gray-800">Invoice</h1>
-          <p className="text-gray-500">Welcome back, Admin.</p>
+          <h1 className="text-5xl font-bold text-gray-800">Faktur</h1>
+          <p className="text-gray-500">Selamat datang kembali, Admin.</p>
         </div>
         <div className="relative" ref={exportRef}>
           <button
             onClick={() => setShowExport(!showExport)}
             className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-50 transition-all"
           >
-            <FiDownload size={16} /> Export
+            <FiDownload size={16} /> Ekspor
           </button>
           {showExport && (
             <div className="absolute right-0 mt-2 bg-[#0a1e5e] text-white rounded-lg shadow-xl z-50 overflow-hidden min-w-[140px]">
-              <p className="px-4 py-2 font-semibold text-sm border-b border-blue-800">Export As</p>
+              <p className="px-4 py-2 font-semibold text-sm border-b border-blue-800">Ekspor Sebagai</p>
               <button onClick={() => handleExport("pdf")} className="block w-full text-left px-4 py-2 text-sm hover:bg-blue-800 transition">.pdf</button>
               <button onClick={() => handleExport("csv")} className="block w-full text-left px-4 py-2 text-sm hover:bg-blue-800 transition">.csv</button>
               <button onClick={() => handleExport("xlsx")} className="block w-full text-left px-4 py-2 text-sm hover:bg-blue-800 transition">.xlsx</button>
@@ -212,16 +228,16 @@ export default function Invoice() {
 
       {/* TABLE */}
       <div className="bg-white rounded-3xl p-8 shadow">
-        <h2 className="text-2xl font-bold mb-6">All Invoice</h2>
+        <h2 className="text-2xl font-bold mb-6">Semua Faktur</h2>
 
         <table className="w-full">
           <thead>
             <tr className="text-left border-b">
-              <th className="pb-4 font-semibold text-gray-700">User</th>
-              <th className="pb-4 font-semibold text-gray-700">Order</th>
+              <th className="pb-4 font-semibold text-gray-700">Pengguna</th>
+              <th className="pb-4 font-semibold text-gray-700">Pesanan</th>
               <th className="pb-4 font-semibold text-gray-700">Status</th>
-              <th className="pb-4 font-semibold text-gray-700">Invoice</th>
-              <th className="pb-4 font-semibold text-gray-700">Details</th>
+              <th className="pb-4 font-semibold text-gray-700">Faktur</th>
+              <th className="pb-4 font-semibold text-gray-700">Detail</th>
             </tr>
           </thead>
           <tbody>
@@ -237,7 +253,7 @@ export default function Invoice() {
             ) : paginatedData.length === 0 ? (
               <tr>
                 <td colSpan="5" className="py-20 text-center text-blue-800 font-bold text-xl">
-                  Data Not Found
+                  Data Tidak Ditemukan
                 </td>
               </tr>
             ) : (
@@ -255,7 +271,7 @@ export default function Invoice() {
                       }}
                       className="text-gray-500 hover:text-blue-600 text-sm font-medium transition"
                     >
-                      View Details
+                      Lihat Detail
                     </button>
                   </td>
                 </tr>
@@ -272,15 +288,15 @@ export default function Invoice() {
           disabled={page <= 1}
           className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-blue-600 px-4 py-2 border border-gray-300 rounded-full disabled:opacity-50 bg-white"
         >
-          <FiChevronLeft size={16} /> Previous
+          <FiChevronLeft size={16} /> Sebelumnya
         </button>
-        <span className="text-sm text-gray-500">Page {page} of {totalPages}</span>
+        <span className="text-sm text-gray-500">Halaman {page} dari {totalPages}</span>
         <button
           onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
           disabled={page >= totalPages}
           className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-blue-600 px-4 py-2 border border-gray-300 rounded-full disabled:opacity-50 bg-white"
         >
-          Next <FiChevronRight size={16} />
+          Selanjutnya <FiChevronRight size={16} />
         </button>
       </div>
 
@@ -322,12 +338,12 @@ export default function Invoice() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                 <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-2">Pelanggan</p>
-                <p className="font-bold text-gray-800 text-base">{selectedInvoice.user_name || "Customer"}</p>
+                <p className="font-bold text-gray-800 text-base">{selectedInvoice.user_name || "Pelanggan"}</p>
                 <p className="text-gray-500 text-sm mt-0.5">{selectedInvoice.user_email || "-"}</p>
                 <p className="text-gray-500 text-sm mt-0.5">{selectedInvoice.user_phone || "No. Telepon tidak tersedia"}</p>
                 <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mt-4 mb-2">Alamat Pengiriman</p>
                 <p className="text-gray-700 text-sm leading-relaxed font-medium">
-                  {selectedInvoice.user_address || "Alamat tidak tersedia"}
+                  {formatAddress(selectedInvoice.shipping_address || selectedInvoice.user_address)}
                 </p>
               </div>
               <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100 text-sm h-fit shadow-sm">
@@ -355,6 +371,33 @@ export default function Invoice() {
                       {statusMap[selectedInvoice.status?.toLowerCase()]?.label || selectedInvoice.status}
                     </span>
                   </div>
+                  {(() => {
+                    const tx = transactions.find((t) => t.order_id === selectedInvoice.id);
+                    const proofUrl = selectedInvoice.payment_proof_url || tx?.payment_proof_url;
+                    if (proofUrl) {
+                      return (
+                        <div className="mt-4 pt-3 border-t border-gray-200 space-y-2">
+                          <span className="text-gray-500 font-bold text-xs uppercase tracking-wider block">Bukti Pembayaran:</span>
+                          <a 
+                            href={proofUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="block group overflow-hidden rounded-xl border border-gray-200 bg-white hover:border-blue-500 transition relative"
+                          >
+                            <img
+                              src={proofUrl}
+                              alt="Bukti Pembayaran"
+                              className="w-full max-h-32 object-contain mx-auto group-hover:scale-[1.02] transition duration-200"
+                            />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[10px] font-bold transition duration-200 print:hidden">
+                              Buka Gambar 🔍
+                            </div>
+                          </a>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
                 </div>
               </div>
             </div>

@@ -296,7 +296,7 @@ function Analytics() {
                   : "text-gray-500 hover:text-gray-800"
               }`}
             >
-              Bar
+              Batang
             </button>
             <button
               onClick={() => setChartType("line")}
@@ -306,7 +306,7 @@ function Analytics() {
                   : "text-gray-500 hover:text-gray-800"
               }`}
             >
-              Line
+              Garis
             </button>
           </div>
         </div>
@@ -314,7 +314,7 @@ function Analytics() {
 
       {/* OVERVIEW CHART */}
       <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 mb-8">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800">Analytics Overview</h2>
+        <h2 className="text-2xl font-bold mb-6 text-gray-800">Ikhtisar Analisis</h2>
         <div className="h-72">
           {chartType === "bar" ? (
             <Bar data={chartData} options={chartOptions} />

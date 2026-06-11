@@ -7,7 +7,7 @@ import {
   FiPackage,
   FiMail,
 } from "react-icons/fi";
-import logo from "../../assets/images/logo frostmart.png";
+import logo from "../../assets/images/logo_frostmart.png";
 import { formatDateTime } from "../../utils/dateFormatter";
 
 // =====================
@@ -302,7 +302,7 @@ export default function PaymentSuccess() {
           >
             <FiMail size={18} color="#16a34a" style={{ flexShrink: 0, marginTop: 2 }} />
             <p style={{ fontSize: 12, color: "#15803d", lineHeight: 1.6, margin: 0 }}>
-              Konfirmasi pesanan telah dikirimkan ke email Anda. Cek kotak masuk untuk
+              Konfirmasi pesanan telah dikirimkan. Cek detailnya pada profil anda untuk
               detail dan informasi pelacakan pengiriman.
             </p>
           </div>
@@ -388,14 +388,14 @@ export default function PaymentSuccess() {
         >
           <div>
             <p style={{ color: "white", fontWeight: 700, fontSize: 15, margin: 0 }}>
-              🎁 Daftar Member & Hemat hingga 50%
+              ❄️ Temukan Frozen Food Premium Lainnya
             </p>
             <p style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, margin: "4px 0 0" }}>
-              Dapatkan promo eksklusif setiap minggu
+              Stok makanan beku berkualitas, higienis, dan praktis untuk keluarga Anda
             </p>
           </div>
           <Link
-            to="/register"
+            to="/menu"
             style={{
               background: "white",
               color: "#1c54ff",
@@ -408,7 +408,7 @@ export default function PaymentSuccess() {
               flexShrink: 0,
             }}
           >
-            Daftar Sekarang
+            Jelajahi Menu
           </Link>
         </div>
 

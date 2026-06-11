@@ -3,7 +3,7 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { FiSearch, FiShoppingCart, FiMenu, FiX } from "react-icons/fi";
 import { FaUserCircle } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import logo from "../assets/images/logo frostmart.png";
+import logo from "../assets/images/logo_frostmart.png";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -43,7 +43,7 @@ function Navbar() {
                     : "text-gray-500 hover:text-blue-600 transition"
                 }
               >
-                Home
+                Beranda
               </NavLink>
             </li>
             
@@ -70,7 +70,7 @@ function Navbar() {
                     : "text-gray-500 hover:text-blue-600 transition"
                 }
               >
-                About
+                Tentang Kami
               </NavLink>
             </li>
           </ul>
@@ -116,7 +116,7 @@ function Navbar() {
               onClick={() => navigate("/login")}
               className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 md:px-6 md:py-2.5 rounded-full text-xs md:text-base font-semibold hover:bg-blue-700 transition"
             >
-              Sign in
+              Masuk
             </button>
           )}
 
@@ -142,7 +142,7 @@ function Navbar() {
                   isActive ? "text-blue-600 block" : "text-gray-600 hover:text-blue-600 block transition"
                 }
               >
-                Home
+                Beranda
               </NavLink>
             </li>
             <li>
@@ -164,7 +164,7 @@ function Navbar() {
                   isActive ? "text-blue-600 block" : "text-gray-600 hover:text-blue-600 block transition"
                 }
               >
-                About
+                Tentang Kami
               </NavLink>
             </li>
           </ul>

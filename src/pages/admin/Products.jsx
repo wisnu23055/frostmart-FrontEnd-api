@@ -61,7 +61,7 @@ export default function Products() {
     setShowExport(false);
 
     if (format === "csv") {
-      const header = "Product,Price,Stock,Category\n";
+      const header = "Produk,Harga,Stok,Kategori\n";
       const rows = products.map((p) => `"${p.name}",${p.price},${p.stock},"${p.category || ""}"`).join("\n");
       const blob = new Blob([header + rows], { type: "text/csv" });
       const url = URL.createObjectURL(blob);
@@ -81,10 +81,10 @@ export default function Products() {
   <Worksheet ss:Name="Products">
     <Table>
       <Row>
-        <Cell><Data ss:Type="String">Product</Data></Cell>
-        <Cell><Data ss:Type="String">Price</Data></Cell>
-        <Cell><Data ss:Type="String">Stock</Data></Cell>
-        <Cell><Data ss:Type="String">Category</Data></Cell>
+        <Cell><Data ss:Type="String">Produk</Data></Cell>
+        <Cell><Data ss:Type="String">Harga</Data></Cell>
+        <Cell><Data ss:Type="String">Stok</Data></Cell>
+        <Cell><Data ss:Type="String">Kategori</Data></Cell>
       </Row>`;
       const rows = products.map(p => `
       <Row>
@@ -109,7 +109,7 @@ export default function Products() {
       printWindow.document.write(`
         <html>
           <head>
-            <title>Export PDF - Products</title>
+            <title>Ekspor PDF - Produk</title>
             <style>
               body { font-family: Arial, sans-serif; padding: 30px; color: #333; }
               h1 { color: #002d84; margin-bottom: 5px; font-size: 24px; }
@@ -121,15 +121,15 @@ export default function Products() {
             </style>
           </head>
           <body>
-            <h1>All Products</h1>
-            <p>FrostMart Products List - Exported: ${new Date().toLocaleDateString("id-ID")}</p>
+            <h1>Semua Produk</h1>
+            <p>Daftar Produk FrostMart - Diekspor: ${new Date().toLocaleDateString("id-ID")}</p>
             <table>
               <thead>
                 <tr>
-                  <th>Product</th>
-                  <th>Price</th>
-                  <th>Stock</th>
-                  <th>Category</th>
+                  <th>Produk</th>
+                  <th>Harga</th>
+                  <th>Stok</th>
+                  <th>Kategori</th>
                 </tr>
               </thead>
               <tbody>
@@ -138,7 +138,7 @@ export default function Products() {
                     <td>${p.name}</td>
                     <td>Rp ${Number(p.price).toLocaleString("id-ID")}</td>
                     <td>${p.stock}</td>
-                    <td>${p.category || "Uncategorized"}</td>
+                    <td>${p.category || "Tanpa Kategori"}</td>
                   </tr>
                 `).join("")}
               </tbody>
@@ -161,26 +161,26 @@ export default function Products() {
       {/* HEADER */}
       <div className="flex justify-between items-start mb-8">
         <div>
-          <h1 className="text-5xl font-bold text-gray-800">Products</h1>
-          <p className="text-gray-500">Welcome back, Admin.</p>
+          <h1 className="text-5xl font-bold text-gray-800">Produk</h1>
+          <p className="text-gray-500">Selamat datang kembali, Admin.</p>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate("/admin/products/add")}
             className="bg-white border border-gray-300 text-gray-800 px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-50 transition-all"
           >
-            Add New Product
+            Tambah Produk Baru
           </button>
           <div className="relative" ref={exportRef}>
             <button
               onClick={() => setShowExport(!showExport)}
               className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-50 transition-all"
             >
-              <FiDownload size={16} /> Export
+              <FiDownload size={16} /> Ekspor
             </button>
             {showExport && (
               <div className="absolute right-0 mt-2 bg-[#0a1e5e] text-white rounded-lg shadow-xl z-50 overflow-hidden min-w-[140px]">
-                <p className="px-4 py-2 font-semibold text-sm border-b border-blue-800">Export As</p>
+                <p className="px-4 py-2 font-semibold text-sm border-b border-blue-800">Ekspor Sebagai</p>
                 <button onClick={() => handleExport("pdf")} className="block w-full text-left px-4 py-2 text-sm hover:bg-blue-800 transition">.pdf</button>
                 <button onClick={() => handleExport("csv")} className="block w-full text-left px-4 py-2 text-sm hover:bg-blue-800 transition">.csv</button>
                 <button onClick={() => handleExport("xlsx")} className="block w-full text-left px-4 py-2 text-sm hover:bg-blue-800 transition">.xlsx</button>
@@ -192,16 +192,16 @@ export default function Products() {
 
       {/* TABLE */}
       <div className="bg-white rounded-3xl p-8 shadow">
-        <h2 className="text-2xl font-bold mb-6">All Stocks</h2>
+        <h2 className="text-2xl font-bold mb-6">Semua Stok</h2>
 
         <table className="w-full">
           <thead>
             <tr className="text-left border-b">
-              <th className="pb-4 font-semibold text-gray-700">Product</th>
-              <th className="pb-4 font-semibold text-gray-700">Price</th>
-              <th className="pb-4 font-semibold text-gray-700">Stocks</th>
-              <th className="pb-4 font-semibold text-gray-700">Category</th>
-              <th className="pb-4 font-semibold text-gray-700 text-right">Action</th>
+              <th className="pb-4 font-semibold text-gray-700">Produk</th>
+              <th className="pb-4 font-semibold text-gray-700">Harga</th>
+              <th className="pb-4 font-semibold text-gray-700">Stok</th>
+              <th className="pb-4 font-semibold text-gray-700">Kategori</th>
+              <th className="pb-4 font-semibold text-gray-700 text-right">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -212,7 +212,7 @@ export default function Products() {
             ) : products.length === 0 ? (
               <tr>
                 <td colSpan="5" className="py-20 text-center text-blue-800 font-bold text-xl">
-                  Data Not Found
+                  Data Tidak Ditemukan
                 </td>
               </tr>
             ) : (
@@ -231,7 +231,7 @@ export default function Products() {
                   </td>
                   <td className="py-4 text-gray-700">Rp {Number(product.price).toLocaleString("id-ID")}</td>
                   <td className="py-4 text-gray-700">{product.stock}</td>
-                  <td className="py-4 text-gray-700">{product.category || "Uncategorized"}</td>
+                  <td className="py-4 text-gray-700">{product.category || "Tanpa Kategori"}</td>
                   <td className="py-4 text-right">
                     <div className="flex items-center justify-end gap-3">
                       <button 
@@ -262,15 +262,15 @@ export default function Products() {
           disabled={page <= 1}
           className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-blue-600 px-4 py-2 border border-gray-300 rounded-full disabled:opacity-50 bg-white"
         >
-          <FiChevronLeft size={16} /> Previous
+          <FiChevronLeft size={16} /> Sebelumnya
         </button>
-        <span className="text-sm text-gray-500">Page {page} of {totalPages}</span>
+        <span className="text-sm text-gray-500">Halaman {page} dari {totalPages}</span>
         <button
           onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
           disabled={page >= totalPages}
           className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-blue-600 px-4 py-2 border border-gray-300 rounded-full disabled:opacity-50 bg-white"
         >
-          Next <FiChevronRight size={16} />
+          Selanjutnya <FiChevronRight size={16} />
         </button>
       </div>
 

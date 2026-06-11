@@ -92,7 +92,7 @@ export default function FrostmartHomePage() {
       <section className="bg-gradient-to-b from-[#55a8ea] to-[#3a32ff] min-h-[640px] px-6 md:px-10 py-16 flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-16 lg:gap-10">
         <div className="max-w-lg text-white text-center lg:text-left shrink-0">
           <h1 className="text-4xl md:text-5xl font-extrabold leading-tight mb-6">
-            Be The Fastest In<br />Delivery Your Food
+            Pengiriman Tercepat<br />Untuk Makanan Anda
           </h1>
           <p className="text-base mb-8 text-blue-100 leading-relaxed">
             Pesan frozen food favoritmu sekarang. Pengiriman cepat, aman, dan pastinya halal hingga ke tanganmu.
@@ -126,7 +126,7 @@ export default function FrostmartHomePage() {
                   </div>
                   <div className="text-center mt-6">
                     <h2 className="text-sm font-bold truncate text-gray-900">{item.name}</h2>
-                    <p className="text-gray-500 mt-1 text-xs truncate">By {item.brand || "FrostMart"}</p>
+                    <p className="text-gray-500 mt-1 text-xs truncate">Oleh {item.brand || "FrostMart"}</p>
                     <p className="text-yellow-400 mt-2 text-base">★★★★★</p>
                   </div>
                 </Link>
@@ -138,9 +138,9 @@ export default function FrostmartHomePage() {
       {/* ========================= WHAT WE SERVE ========================= */}
       <section className="py-24 px-10 bg-white text-center">
         <p className="text-orange-400 font-semibold text-sm mb-3 uppercase tracking-widest">
-          How it Works
+          Cara Kerja
         </p>
-        <h2 className="text-4xl font-bold mb-5 text-gray-900">What We Serve</h2>
+        <h2 className="text-4xl font-bold mb-5 text-gray-900">Layanan Kami</h2>
         <p className="text-gray-500 text-base max-w-2xl mx-auto mb-16 leading-relaxed">
           Kualitas produk adalah prioritas utama kami. Kami selalu menjamin kehalalan dan keamanan produk hingga sampai ke tangan Anda.
         </p>
@@ -236,7 +236,7 @@ export default function FrostmartHomePage() {
                   </div>
 
                   <h3 className="text-base font-bold truncate text-gray-900">{item.name}</h3>
-                  <p className="text-gray-500 mt-1 text-xs truncate">By {item.brand || "FrostMart"}</p>
+                  <p className="text-gray-500 mt-1 text-xs truncate">Oleh {item.brand || "FrostMart"}</p>
                   <p className="font-bold text-base mt-3 text-gray-800">
                     Rp {formatRp(price)}
                   </p>

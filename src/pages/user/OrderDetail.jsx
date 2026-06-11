@@ -29,6 +29,45 @@ export default function OrderDetail() {
   const [timeLeft, setTimeLeft] = useState("");
   const [isExpired, setIsExpired] = useState(false);
 
+  const [paymentProofFile, setPaymentProofFile] = useState(null);
+  const [paymentProofPreview, setPaymentProofPreview] = useState("");
+
+  const handlePaymentProofChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Ukuran file tidak boleh melebihi 2MB.");
+      return;
+    }
+
+    setPaymentProofFile(file);
+    setPaymentProofPreview(URL.createObjectURL(file));
+  };
+
+  const handleRemovePaymentProof = () => {
+    setPaymentProofFile(null);
+    setPaymentProofPreview("");
+  };
+
+  const handleDownloadQris = async (url) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const localUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = localUrl;
+      a.download = `QRIS-Merchant-FrostMart.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(localUrl);
+    } catch (err) {
+      console.error("Gagal mengunduh QRIS:", err);
+      window.open(url, "_blank");
+    }
+  };
+
   useEffect(() => {
     const fetchOrderDetail = async () => {
       try {
@@ -111,9 +150,11 @@ export default function OrderDetail() {
   const payMethod = order.payment_method || order.paymentMethod || 'Transfer / COD';
   const isTransferBank = payMethod === 'Transfer Bank';
   const isEwallet = payMethod === 'E-Wallet';
+  const isQris = payMethod === 'QRIS';
   const isCod = payMethod.toLowerCase() === 'cash' || payMethod === 'Bayar di Tempat (COD)';
   const isPaid = order.payment_status === 'paid' || order.status?.toLowerCase() === 'paid';
-  const isPendingNonCod = order.status?.toLowerCase() === 'pending' && !isCod && !isPaid;
+  const hasUploadedProof = !!order.payment_proof_url;
+  const isPendingNonCod = order.status?.toLowerCase() === 'pending' && !isCod && !isPaid && !hasUploadedProof;
 
   // Helper colors for status
   const getStatusColor = (status) => {
@@ -195,6 +236,21 @@ export default function OrderDetail() {
               <FiCreditCard size={18} />
               Bayar Sekarang
             </button>
+          </div>
+        )}
+
+        {/* Bukti Pembayaran Sudah Diunggah & Menunggu Verifikasi */}
+        {order.status?.toLowerCase() === 'pending' && !isCod && hasUploadedProof && (
+          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 mb-4 flex items-center gap-3">
+            <div className="p-3 bg-blue-100 text-blue-600 rounded-full shrink-0">
+              <FiClock size={24} className="animate-spin" style={{ animationDuration: '3s' }} />
+            </div>
+            <div>
+              <p className="text-sm text-blue-800 font-bold mb-0.5">Bukti Pembayaran Berhasil Diunggah</p>
+              <p className="text-xs text-blue-600 font-medium">
+                Bukti transfer Anda telah berhasil dikirim dan sedang dalam proses verifikasi oleh admin. Mohon tunggu.
+              </p>
+            </div>
           </div>
         )}
 
@@ -299,65 +355,151 @@ export default function OrderDetail() {
       {/* QRIS PAYMENT MODAL */}
       {showQrisModal && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl text-center select-none border border-gray-100 animate-in fade-in zoom-in duration-200">
-            <h3 className="text-xl font-bold text-gray-800 mb-1">Pembayaran QRIS</h3>
-            <p className="text-sm text-gray-400 mb-5">Order ID: FM-{shortId}</p>
+          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl text-center select-none border border-gray-100 animate-in fade-in zoom-in duration-200 overflow-y-auto max-h-[90vh]">
+            <h3 className="text-xl font-bold text-gray-800 mb-1">Instruksi Pembayaran</h3>
+            <p className="text-sm text-gray-400 mb-5">ID Pesanan: FM-{shortId}</p>
 
-            {/* QRIS Code Image */}
-            <div className="w-60 h-60 mx-auto bg-gray-50 border border-gray-100 rounded-2xl p-4 flex items-center justify-center shadow-inner mb-5">
-              <img
-                src={
-                  (isTransferBank
-                    ? (qrisStoreData?.bank_qris_url || qrisStoreData?.ewallet_qris_url)
-                    : (qrisStoreData?.ewallet_qris_url || qrisStoreData?.bank_qris_url)) ||
-                  `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=FrostMart-Order-FM-${shortId}`
-                }
-                alt="QRIS Code"
-                className="w-full h-full object-contain"
-                onError={(e) => {
-                  e.target.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=FrostMart-Order-FM-${shortId}`;
-                }}
-              />
-            </div>
-
-            {/* Payment Info Details */}
-            <div className="bg-gray-50 rounded-2xl p-4 mb-6 text-sm text-left border border-gray-100 space-y-2">
-              <div className="flex justify-between">
-                <span className="text-gray-400 font-semibold">Metode:</span>
-                <span className="font-bold text-gray-800">{payMethod}</span>
+            {/* QRIS Code Image / Bank / Ewallet Details */}
+            {isQris && qrisStoreData?.qris_url && (
+              <div className="flex flex-col items-center gap-2 mb-5">
+                <div 
+                  className="w-48 h-48 bg-white border border-gray-200 rounded-2xl p-2 flex items-center justify-center shadow-sm cursor-pointer hover:shadow-md transition active:scale-95 mx-auto"
+                  onClick={() => handleDownloadQris(qrisStoreData.qris_url)}
+                  title="Klik untuk mengunduh QRIS otomatis"
+                >
+                  <img
+                    src={qrisStoreData.qris_url}
+                    alt="QRIS Merchant Toko"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <p className="text-center text-xs text-gray-400 max-w-[280px] mt-1 leading-relaxed">
+                  Mendukung GoPay, OVO, Dana, ShopeePay, M-Banking, dll.
+                  <br />
+                  <span className="text-blue-600 font-semibold">Klik gambar QRIS untuk mengunduh otomatis.</span>
+                </p>
               </div>
-              
-              {isTransferBank ? (
-                // Transfer Bank
-                <>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400 font-semibold">Bank:</span>
-                    <span className="font-bold text-gray-800">{qrisStoreData?.bank_name || "BCA"}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400 font-semibold">Pemilik Rekening:</span>
-                    <span className="font-bold text-gray-800">{qrisStoreData?.bank_account_name || "AIDA FROZEN"}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400 font-semibold">No. Rekening:</span>
-                    <span className="font-bold text-gray-800">{qrisStoreData?.bank_account_number || "123-456-7890"}</span>
-                  </div>
-                </>
-              ) : (
-                // E-Wallet
-                <>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400 font-semibold">E-Wallet:</span>
-                    <span className="font-bold text-gray-800">{qrisStoreData?.ewallet_name || "GoPay/OVO/Dana"}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400 font-semibold">Pemilik Akun:</span>
-                    <span className="font-bold text-gray-800">{qrisStoreData?.ewallet_owner_name || "AIDA FROZEN"}</span>
-                  </div>
-                </>
-              )}
+            )}
 
-              <div className="border-t border-gray-200/60 pt-2.5 mt-2 flex justify-between items-center">
+            {isTransferBank && qrisStoreData && (
+              <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4 text-left space-y-3 text-sm mb-5">
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">TRANSFER KE REKENING BERIKUT:</p>
+                
+                {qrisStoreData.bank_1 && (
+                  <div className="flex justify-between items-center pb-1 border-b border-gray-200/60">
+                    <div>
+                      <p className="font-extrabold text-blue-600">BCA</p>
+                      <p className="font-bold text-gray-700 mt-0.5">{qrisStoreData.bank_1}</p>
+                    </div>
+                    <p className="text-xs text-gray-400 font-bold">A/N {qrisStoreData.bank_account_name || 'FROSTMART'}</p>
+                  </div>
+                )}
+                
+                {qrisStoreData.bank_2 && (
+                  <div className="flex justify-between items-center pb-1 border-b border-gray-200/60">
+                    <div>
+                      <p className="font-extrabold text-blue-600">Mandiri</p>
+                      <p className="font-bold text-gray-700 mt-0.5">{qrisStoreData.bank_2}</p>
+                    </div>
+                    <p className="text-xs text-gray-400 font-bold">A/N {qrisStoreData.bank_account_name || 'FROSTMART'}</p>
+                  </div>
+                )}
+
+                {qrisStoreData.bank_3 && (
+                  <div className="flex justify-between items-center pb-1 border-b border-gray-200/60">
+                    <div>
+                      <p className="font-extrabold text-blue-600">BRI</p>
+                      <p className="font-bold text-gray-700 mt-0.5">{qrisStoreData.bank_3}</p>
+                    </div>
+                    <p className="text-xs text-gray-400 font-bold">A/N {qrisStoreData.bank_account_name || 'FROSTMART'}</p>
+                  </div>
+                )}
+
+                {qrisStoreData.bank_4 && (
+                  <div className="flex justify-between items-center pb-1">
+                    <div>
+                      <p className="font-extrabold text-blue-600">BNI</p>
+                      <p className="font-bold text-gray-700 mt-0.5">{qrisStoreData.bank_4}</p>
+                    </div>
+                    <p className="text-xs text-gray-400 font-bold">A/N {qrisStoreData.bank_account_name || 'FROSTMART'}</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {isEwallet && qrisStoreData && (
+              <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4 text-left space-y-3 text-sm mb-5">
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">TRANSFER KE NOMOR E-WALLET BERIKUT:</p>
+                {(() => {
+                  const nums = [
+                    qrisStoreData.ewallet_1,
+                    qrisStoreData.ewallet_2,
+                    qrisStoreData.ewallet_3,
+                    qrisStoreData.ewallet_4,
+                  ].filter(Boolean);
+                  
+                  const uniqueNums = [...new Set(nums)];
+                  const allSame = uniqueNums.length === 1;
+
+                  if (allSame && nums.length > 0) {
+                    return (
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-extrabold text-[#1c54ff]">GoPay / OVO / Dana / ShopeePay</p>
+                          <p className="font-bold text-gray-700 mt-0.5">{nums[0]}</p>
+                        </div>
+                        <p className="text-xs text-gray-400 font-bold">A/N {qrisStoreData.ewallet_owner_name || 'FROSTMART'}</p>
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div className="space-y-3">
+                        {qrisStoreData.ewallet_1 && (
+                          <div className="flex justify-between items-center pb-1 border-b border-gray-200/60">
+                            <div>
+                              <p className="font-bold text-[#1c54ff]">GoPay</p>
+                              <p className="text-gray-700 font-semibold mt-0.5">{qrisStoreData.ewallet_1}</p>
+                            </div>
+                            <p className="text-xs text-gray-400 font-bold">A/N {qrisStoreData.ewallet_owner_name || 'FROSTMART'}</p>
+                          </div>
+                        )}
+                        {qrisStoreData.ewallet_2 && (
+                          <div className="flex justify-between items-center pb-1 border-b border-gray-200/60">
+                            <div>
+                              <p className="font-bold text-[#1c54ff]">OVO</p>
+                              <p className="text-gray-700 font-semibold mt-0.5">{qrisStoreData.ewallet_2}</p>
+                            </div>
+                            <p className="text-xs text-gray-400 font-bold">A/N {qrisStoreData.ewallet_owner_name || 'FROSTMART'}</p>
+                          </div>
+                        )}
+                        {qrisStoreData.ewallet_3 && (
+                          <div className="flex justify-between items-center pb-1 border-b border-gray-200/60">
+                            <div>
+                              <p className="font-bold text-[#1c54ff]">Dana</p>
+                              <p className="text-gray-700 font-semibold mt-0.5">{qrisStoreData.ewallet_3}</p>
+                            </div>
+                            <p className="text-xs text-gray-400 font-bold">A/N {qrisStoreData.ewallet_owner_name || 'FROSTMART'}</p>
+                          </div>
+                        )}
+                        {qrisStoreData.ewallet_4 && (
+                          <div className="flex justify-between items-center pb-1">
+                            <div>
+                              <p className="font-bold text-[#1c54ff]">ShopeePay</p>
+                              <p className="text-gray-700 font-semibold mt-0.5">{qrisStoreData.ewallet_4}</p>
+                            </div>
+                            <p className="text-xs text-gray-400 font-bold">A/N {qrisStoreData.ewallet_owner_name || 'FROSTMART'}</p>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
+                })()}
+              </div>
+            )}
+
+            {/* Total Pembayaran display */}
+            <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4 text-left text-sm mb-5">
+              <div className="flex justify-between items-center">
                 <span className="text-gray-500 font-bold">Total Pembayaran:</span>
                 <span className="text-blue-600 font-extrabold text-base">
                   Rp{safeTotal.toLocaleString("id-ID")}
@@ -365,11 +507,48 @@ export default function OrderDetail() {
               </div>
             </div>
 
+            {/* UPLOAD BUKTI PEMBAYARAN DI MODAL */}
+            <div className="border-t border-gray-100 pt-4 text-left space-y-3 mb-6">
+              <h4 className="font-bold text-gray-800 text-sm">Upload Bukti Pembayaran</h4>
+              <p className="text-xs text-gray-400">Silakan unggah bukti transfer / screenshot Anda di sini.</p>
+              
+              <div className="flex items-center gap-3">
+                <label className="cursor-pointer bg-blue-50 text-[#1c54ff] hover:bg-blue-100 px-4 py-2 rounded-xl text-xs font-bold transition">
+                  Pilih File
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePaymentProofChange}
+                    className="hidden"
+                  />
+                </label>
+                <span className="text-xs text-gray-500 font-medium truncate max-w-[200px]">
+                  {paymentProofFile ? paymentProofFile.name : "Tidak ada file"}
+                </span>
+              </div>
+
+              {paymentProofPreview && (
+                <div className="mt-2 relative w-24 h-24 rounded-xl overflow-hidden border border-gray-200 bg-white">
+                  <img src={paymentProofPreview} alt="Bukti Pembayaran Preview" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={handleRemovePaymentProof}
+                    className="absolute top-1 right-1 w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center font-bold text-xs shadow-md hover:bg-red-700"
+                  >
+                    &times;
+                  </button>
+                </div>
+              )}
+            </div>
+
             {/* Buttons in Indonesian */}
             <div className="flex gap-3 justify-center">
               <button
                 type="button"
-                onClick={() => setShowQrisModal(false)}
+                onClick={() => {
+                  setShowQrisModal(false);
+                  handleRemovePaymentProof();
+                }}
                 className="flex-1 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 font-bold rounded-xl text-sm transition"
               >
                 Batal
@@ -378,21 +557,31 @@ export default function OrderDetail() {
               <button
                 type="button"
                 onClick={async () => {
+                  if (!paymentProofFile) {
+                    alert("Harap unggah bukti pembayaran terlebih dahulu!");
+                    return;
+                  }
+                  
                   try {
-                    await axiosInstance.post(`/orders/${order.id}/confirm-payment`);
-                    setOrder(prev => prev ? { ...prev, payment_status: "paid" } : null);
+                    const dataPayload = new FormData();
+                    dataPayload.append("payment_proof", paymentProofFile);
+                    
+                    await axiosInstance.post(`/orders/${order.id}/confirm-payment`, dataPayload, {
+                      headers: { "Content-Type": "multipart/form-data" }
+                    });
+                    
+                    // Reload order details
+                    const response = await axiosInstance.get(`/orders/${order.id}`);
+                    const data = response.data.data || response.data;
+                    setOrder(data);
+                    
+                    alert("Bukti pembayaran berhasil diunggah! Menunggu konfirmasi admin.");
+                    handleRemovePaymentProof();
                   } catch (err) {
                     console.error("Gagal mengonfirmasi pembayaran:", err);
-                    alert("Gagal mengonfirmasi pembayaran. Silakan coba lagi.");
+                    alert(err.response?.data?.message || "Gagal mengonfirmasi pembayaran. Silakan coba lagi.");
                   }
                   setShowQrisModal(false);
-                  navigate("/payment-success", { 
-                    state: {
-                      orderNumber: `FM-${shortId}`,
-                      paymentMethod: payMethod,
-                      totalAmount: safeTotal,
-                    }
-                  });
                 }}
                 className="flex-1 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-sm transition shadow-lg shadow-green-600/20"
               >
