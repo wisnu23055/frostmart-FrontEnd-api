@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { FiDownload, FiChevronLeft, FiChevronRight, FiEdit2, FiTrash2 } from "react-icons/fi";
 import axiosInstance from "../../api/axiosInstance";
 
 export default function Products() {
   const navigate = useNavigate();
+  const { searchQuery } = useOutletContext();
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -17,7 +18,7 @@ export default function Products() {
   const fetchProducts = async () => {
     try {
       setIsLoading(true);
-      const response = await axiosInstance.get(`/products?page=${page}&limit=10`);
+      const response = await axiosInstance.get(`/products?page=${page}&limit=10&search=${searchQuery || ""}`);
       const result = response.data;
       setProducts(result.data || result || []);
       setTotalPages(result.total_pages || 1);
@@ -29,8 +30,12 @@ export default function Products() {
   };
 
   useEffect(() => {
+    setPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
     fetchProducts();
-  }, [page]);
+  }, [page, searchQuery]);
 
   // Close export dropdown on outside click
   useEffect(() => {

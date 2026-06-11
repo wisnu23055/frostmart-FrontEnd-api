@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useOutletContext } from "react-router-dom";
 import { FiDownload, FiChevronLeft, FiChevronRight, FiLoader } from "react-icons/fi";
 import axiosInstance from "../../api/axiosInstance";
 import { formatDateOnly } from "../../utils/dateFormatter";
 
 export default function Customers() {
+  const { searchQuery } = useOutletContext();
   const [customers, setCustomers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -14,7 +16,7 @@ export default function Customers() {
   const fetchCustomers = async () => {
     try {
       setIsLoading(true);
-      const response = await axiosInstance.get(`/users?page=${page}&limit=10`);
+      const response = await axiosInstance.get(`/users?page=${page}&limit=10&search=${searchQuery || ""}`);
       const result = response.data;
       setCustomers(result.data || result || []);
       setTotalPages(result.total_pages || 1);
@@ -26,8 +28,12 @@ export default function Customers() {
   };
 
   useEffect(() => {
+    setPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
     fetchCustomers();
-  }, [page]);
+  }, [page, searchQuery]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -180,7 +186,7 @@ export default function Customers() {
               <th className="pb-4 font-semibold text-gray-700">Pengguna</th>
               <th className="pb-4 font-semibold text-gray-700">Status</th>
               <th className="pb-4 font-semibold text-gray-700">Bergabung</th>
-              <th className="pb-4 font-semibold text-gray-700">Total Pesanan</th>
+              <th className="pb-4 font-semibold text-gray-700 text-center">Total Pesanan</th>
             </tr>
           </thead>
           <tbody>

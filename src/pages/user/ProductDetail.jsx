@@ -137,7 +137,7 @@ function ProductDetail() {
     setTimeout(() => toast.remove(), 2500);
   };
 
-  const tabList = ["Deskripsi", "Panduan Masak", "Nutrisi", "Ulasan"];
+  const tabList = ["Deskripsi", "Panduan Masak", "Nutrisi"];
 
   // =====================
   // RENDER: Loading
@@ -492,36 +492,7 @@ function ProductDetail() {
               </div>
             )}
 
-            {/* Tab: Ulasan */}
-            {activeTab === "Ulasan" && (
-              <div className="max-w-4xl">
-                <h3 className="text-xl font-bold text-[#11327c] mb-8">
-                  Ulasan Pembeli
-                </h3>
-                {[
-                  { name: "Budi Santoso", rating: 5, review: `"Produk ${product.name} ini rasanya enak banget! Kualitas terjamin dan pengiriman cepat. Pasti beli lagi!"` },
-                  { name: "Siti Rahayu", rating: 5, review: `"Frozen food favorit keluarga kami. Anak-anak suka banget, praktis dimasak juga."` },
-                  { name: "Ahmad Rizki", rating: 4, review: `"Harga sebanding kualitas. Teksturnya bagus, tidak keras setelah dimasak. Recommended!"` },
-                ].map((r, i) => (
-                  <div key={i} className="border-b border-gray-100 pb-6 mb-6 last:border-0">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 rounded-full bg-blue-100 text-[#1c54ff] flex items-center justify-center">
-                        <FiUser />
-                      </div>
-                      <div>
-                        <h5 className="font-bold text-gray-900 text-sm">{r.name}</h5>
-                        <div className="flex text-[#facc15]">
-                          {[1, 2, 3, 4, 5].map((s) => (
-                            <FiStar key={s} size={12} className={s <= r.rating ? "fill-current text-[#facc15]" : "text-gray-200 fill-gray-200"} />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-600 pl-0">{r.review}</p>
-                  </div>
-                ))}
-              </div>
-            )}
+
           </div>
         </div>
 

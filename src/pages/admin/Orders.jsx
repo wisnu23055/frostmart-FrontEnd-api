@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useOutletContext } from "react-router-dom";
 import { FiDownload, FiChevronLeft, FiChevronRight, FiLoader } from "react-icons/fi";
 import axiosInstance from "../../api/axiosInstance";
 import { formatDateTime } from "../../utils/dateFormatter";
@@ -27,6 +28,7 @@ const formatAddress = (addressStr) => {
 };
 
 export default function AdminOrders() {
+  const { searchQuery } = useOutletContext();
   const [orders, setOrders] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -258,9 +260,29 @@ export default function AdminOrders() {
     }
   };
 
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery]);
+
+  // Client-side filtering based on search query
+  const filteredOrders = orders.filter((o) => {
+    if (!searchQuery) return true;
+    const orderId = `FM-${String(o.id).padStart(3, "0")}`;
+    const userName = (o.user_name || `Pelanggan #${o.user_id}`).toLowerCase();
+    const productName = (o.items?.[0]?.product_name || "").toLowerCase();
+    const status = (statusMap[o.status?.toLowerCase()]?.label || o.status || "").toLowerCase();
+    const query = searchQuery.toLowerCase();
+    return (
+      orderId.toLowerCase().includes(query) ||
+      userName.includes(query) ||
+      productName.includes(query) ||
+      status.includes(query)
+    );
+  });
+
   // Pagination
-  const totalPages = Math.max(1, Math.ceil(orders.length / itemsPerPage));
-  const paginatedOrders = orders.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(filteredOrders.length / itemsPerPage));
+  const paginatedOrders = filteredOrders.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
   return (
     <div className="p-8 bg-gray-100 min-h-screen">
@@ -472,15 +494,12 @@ export default function AdminOrders() {
                                   ? "bg-green-100 text-green-700 border-green-200"
                                   : tx.payment_status === "failed"
                                   ? "bg-red-100 text-red-700 border-red-200"
-                                  : tx.payment_status === "refunded"
-                                  ? "bg-purple-100 text-purple-700 border-purple-200"
                                   : "bg-yellow-100 text-yellow-700 border-yellow-200"
                               }`}
                             >
                               <option value="pending">Menunggu</option>
                               <option value="paid">Lunas</option>
                               <option value="failed">Gagal</option>
-                              <option value="refunded">Dikembalikan</option>
                             </select>
                           ) : (
                             <span className="font-semibold text-gray-500">-</span>

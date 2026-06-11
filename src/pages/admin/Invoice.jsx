@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useOutletContext } from "react-router-dom";
 import { FiDownload, FiChevronLeft, FiChevronRight, FiLoader } from "react-icons/fi";
 import axiosInstance from "../../api/axiosInstance";
 
@@ -26,6 +27,7 @@ const formatAddress = (addressStr) => {
 };
 
 export default function Invoice() {
+  const { searchQuery } = useOutletContext();
   const [transactions, setTransactions] = useState([]);
   const [orders, setOrders] = useState([]);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
@@ -196,9 +198,28 @@ export default function Invoice() {
     }
   };
 
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery]);
+
+  // Client-side filtering based on search query
+  const filteredInvoiceData = invoiceData.filter((inv) => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    const statusLabel = (statusMap[inv.status?.toLowerCase()]?.label || inv.status || "").toLowerCase();
+    const payStatusLabel = inv.paymentStatus.toLowerCase() === "paid" ? "lunas" : inv.paymentStatus.toLowerCase() === "failed" ? "gagal" : "menunggu";
+    return (
+      inv.user.toLowerCase().includes(query) ||
+      inv.orderCode.toLowerCase().includes(query) ||
+      statusLabel.includes(query) ||
+      inv.invoiceNumber.toLowerCase().includes(query) ||
+      payStatusLabel.includes(query)
+    );
+  });
+
   // Pagination
-  const totalPages = Math.max(1, Math.ceil(invoiceData.length / itemsPerPage));
-  const paginatedData = invoiceData.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(filteredInvoiceData.length / itemsPerPage));
+  const paginatedData = filteredInvoiceData.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
   return (
     <div className="p-8 bg-gray-100 min-h-screen">
