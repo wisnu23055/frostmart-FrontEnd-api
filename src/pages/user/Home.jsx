@@ -51,7 +51,13 @@ export default function FrostmartHomePage() {
   }, []);
 
   const heroProducts = products.slice(0, 4);
-  const menuProducts = products.slice(4, 8);
+  
+  let menuProducts = products.slice(4, 8);
+  if (menuProducts.length < 4 && products.length > 0) {
+    const needed = Math.min(4 - menuProducts.length, products.length - menuProducts.length);
+    const remaining = products.filter((p) => !menuProducts.some((mp) => mp.id === p.id));
+    menuProducts = [...menuProducts, ...remaining.slice(0, needed)].slice(0, 4);
+  }
 
   const handleAddToCart = (item) => {
     if (!isLogin) {
