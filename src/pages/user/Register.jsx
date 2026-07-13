@@ -62,16 +62,24 @@ function Register() {
   useEffect(() => {
     if (user) return;
 
+    let initialized = false;
+
     const initGoogle = () => {
-      if (window.google) {
+      if (window.google && !initialized) {
+        initialized = true;
         window.google.accounts.id.initialize({
-          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "1043743475960-9k6f1q28p8h2u4g3u2g3u2g3u2g3u2g3.apps.googleusercontent.com",
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
           callback: handleGoogleCallback,
         });
-        window.google.accounts.id.renderButton(
-          document.getElementById("google-signup-btn"),
-          { theme: "outline", size: "large", width: "100%", text: "signup_with" }
-        );
+        const btnContainer = document.getElementById("google-signup-btn");
+        if (btnContainer) {
+          window.google.accounts.id.renderButton(btnContainer, {
+            theme: "outline",
+            size: "large",
+            width: 350,
+            text: "signup_with",
+          });
+        }
       }
     };
 
@@ -80,7 +88,7 @@ function Register() {
         initGoogle();
         clearInterval(interval);
       }
-    }, 100);
+    }, 200);
 
     return () => clearInterval(interval);
   }, [user]);

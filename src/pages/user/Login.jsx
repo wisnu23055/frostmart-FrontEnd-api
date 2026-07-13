@@ -61,16 +61,24 @@ function Login() {
   useEffect(() => {
     if (user) return; // Skip if already logged in
 
+    let initialized = false;
+
     const initGoogle = () => {
-      if (window.google) {
+      if (window.google && !initialized) {
+        initialized = true;
         window.google.accounts.id.initialize({
-          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "1043743475960-9k6f1q28p8h2u4g3u2g3u2g3u2g3u2g3.apps.googleusercontent.com", // Google Client ID placeholder/env
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
           callback: handleGoogleCallback,
         });
-        window.google.accounts.id.renderButton(
-          document.getElementById("google-signin-btn"),
-          { theme: "outline", size: "large", width: "100%", text: "continue_with" }
-        );
+        const btnContainer = document.getElementById("google-signin-btn");
+        if (btnContainer) {
+          window.google.accounts.id.renderButton(btnContainer, {
+            theme: "outline",
+            size: "large",
+            width: 350,
+            text: "continue_with",
+          });
+        }
       }
     };
 
@@ -80,7 +88,7 @@ function Login() {
         initGoogle();
         clearInterval(interval);
       }
-    }, 100);
+    }, 200);
 
     return () => clearInterval(interval);
   }, [user]);
