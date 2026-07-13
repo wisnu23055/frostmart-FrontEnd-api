@@ -19,8 +19,8 @@ function Footer() {
             </div>
 
             <p className="text-sm text-gray-300 leading-relaxed mb-5">
-              Jalan Semangka Raya, Telaga Murni,<br />
-              Cikarang Barat, Kab. Bekasi
+              Jalan Jambu Raya, Telaga Kuning,<br />
+              Saranjana Utara, Kab. Saranjana
             </p>
 
             {/* Social Media */}
