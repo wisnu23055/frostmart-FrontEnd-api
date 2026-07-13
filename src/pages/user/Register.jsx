@@ -1,17 +1,18 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { loginSuccess } from "../../store/slices/authSlice";
 import {
   FiUser,
   FiMail,
   FiLock,
   FiCheckCircle,
 } from "react-icons/fi";
-
 import axiosInstance from "../../api/axiosInstance";
 
 function Register() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
 
   const [formData, setFormData] = useState({
@@ -32,6 +33,57 @@ function Register() {
       [name]: type === "checkbox" ? checked : value,
     });
   };
+
+  const handleGoogleCallback = async (response) => {
+    setErrorMsg("");
+    setIsLoading(true);
+    try {
+      const res = await axiosInstance.post("/auth/google/signin", {
+        credential: response.credential,
+      });
+
+      const { user: loggedInUser } = res.data;
+      localStorage.setItem("user", JSON.stringify(loggedInUser));
+      dispatch(loginSuccess(loggedInUser));
+
+      if (loggedInUser.role && loggedInUser.role.toLowerCase() === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("[Google SignUp Client Error]", error);
+      setErrorMsg(error.response?.data?.message || "Registrasi Google gagal.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user) return;
+
+    const initGoogle = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "1043743475960-9k6f1q28p8h2u4g3u2g3u2g3u2g3u2g3.apps.googleusercontent.com",
+          callback: handleGoogleCallback,
+        });
+        window.google.accounts.id.renderButton(
+          document.getElementById("google-signup-btn"),
+          { theme: "outline", size: "large", width: "100%", text: "signup_with" }
+        );
+      }
+    };
+
+    const interval = setInterval(() => {
+      if (window.google) {
+        initGoogle();
+        clearInterval(interval);
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -92,7 +144,6 @@ function Register() {
 
   return (
     <div className="min-h-screen flex">
-
       {/* LEFT SIDE */}
       <div className="hidden lg:flex w-1/2 relative">
         <img
@@ -100,16 +151,9 @@ function Register() {
           alt="Frozen Food"
           className="w-full h-full object-cover"
         />
-
         <div className="absolute inset-0 bg-black/50 flex flex-col justify-center items-center text-white px-10 text-center">
-          <h1 className="text-5xl font-bold mb-6">
-            FrostMart
-          </h1>
-
-          <p className="text-2xl font-semibold mb-4">
-            Kesegaran terjaga, kualitas terjamin.
-          </p>
-
+          <h1 className="text-5xl font-bold mb-6">FrostMart</h1>
+          <p className="text-2xl font-semibold mb-4">Kesegaran terjaga, kualitas terjamin.</p>
           <p className="text-lg text-gray-200">
             Rasakan layanan logistik gourmet dengan pendinginan presisi untuk keunggulan kuliner.
           </p>
@@ -118,16 +162,9 @@ function Register() {
 
       {/* RIGHT SIDE */}
       <div className="w-full lg:w-1/2 bg-gradient-to-b from-blue-500 to-blue-700 flex justify-center items-center px-8 py-10">
-
         <div className="w-full max-w-md text-white">
-
-          <h2 className="text-4xl font-bold mb-3">
-            Daftar Akun Baru
-          </h2>
-
-          <p className="mb-10 text-lg text-blue-100">
-            Bergabung dengan FrostMart hari ini.
-          </p>
+          <h2 className="text-4xl font-bold mb-3">Daftar Akun Baru</h2>
+          <p className="mb-10 text-lg text-blue-100">Bergabung dengan FrostMart hari ini.</p>
 
           {errorMsg && (
             <div className="bg-red-100 text-red-600 p-3 rounded-xl mb-4 text-sm font-medium text-center border border-red-200">
@@ -136,20 +173,12 @@ function Register() {
           )}
 
           {/* FORM */}
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-6"
-          >
-
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* FULL NAME */}
             <div>
-              <label className="block mb-2 font-medium">
-                Nama Lengkap
-              </label>
-
+              <label className="block mb-2 font-medium">Nama Lengkap</label>
               <div className="flex items-center bg-white rounded-lg px-4 py-3">
                 <FiUser className="text-gray-500 text-xl mr-3" />
-
                 <input
                   type="text"
                   name="fullName"
@@ -164,13 +193,9 @@ function Register() {
 
             {/* EMAIL */}
             <div>
-              <label className="block mb-2 font-medium">
-                Email
-              </label>
-
+              <label className="block mb-2 font-medium">Email</label>
               <div className="flex items-center bg-white rounded-lg px-4 py-3">
                 <FiMail className="text-gray-500 text-xl mr-3" />
-
                 <input
                   type="email"
                   name="email"
@@ -185,13 +210,9 @@ function Register() {
 
             {/* PASSWORD */}
             <div>
-              <label className="block mb-2 font-medium">
-                Password
-              </label>
-
+              <label className="block mb-2 font-medium">Password</label>
               <div className="flex items-center bg-white rounded-lg px-4 py-3">
                 <FiLock className="text-gray-500 text-xl mr-3" />
-
                 <input
                   type="password"
                   name="password"
@@ -206,13 +227,9 @@ function Register() {
 
             {/* CONFIRM PASSWORD */}
             <div>
-              <label className="block mb-2 font-medium">
-                Konfirmasi Password
-              </label>
-
+              <label className="block mb-2 font-medium">Konfirmasi Password</label>
               <div className="flex items-center bg-white rounded-lg px-4 py-3">
                 <FiCheckCircle className="text-gray-500 text-xl mr-3" />
-
                 <input
                   type="password"
                   name="confirmPassword"
@@ -232,18 +249,12 @@ function Register() {
                 name="agreeTerms"
                 checked={formData.agreeTerms}
                 onChange={handleChange}
-                className="mt-1 w-4 h-4 accent-blue-900"
+                className="mt-1 w-4 h-4 accent-blue-900 cursor-pointer"
               />
-
               <p className="text-sm text-blue-100 leading-relaxed">
                 Saya menyetujui{" "}
-                <span className="underline cursor-pointer font-medium">
-                  Syarat dan Ketentuan
-                </span>{" "}
-                dan{" "}
-                <span className="underline cursor-pointer font-medium">
-                  Kebijakan Privasi
-                </span>
+                <span className="underline cursor-pointer font-medium">Syarat dan Ketentuan</span>{" "}
+                dan <span className="underline cursor-pointer font-medium">Kebijakan Privasi</span>
               </p>
             </div>
 
@@ -251,25 +262,28 @@ function Register() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-blue-900 hover:bg-blue-950 transition py-4 rounded-lg font-semibold text-lg disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full bg-blue-900 hover:bg-blue-950 transition py-4 rounded-lg font-semibold text-lg disabled:opacity-70 disabled:cursor-not-allowed shadow"
             >
               {isLoading ? "Memproses..." : "Daftar Akun"}
             </button>
-
           </form>
+
+          {/* GOOGLE SIGN UP BUTTON */}
+          <div className="relative flex py-4 items-center">
+            <div className="flex-grow border-t border-blue-400 opacity-30"></div>
+            <span className="flex-shrink mx-4 text-blue-100 text-xs uppercase">atau daftar dengan</span>
+            <div className="flex-grow border-t border-blue-400 opacity-30"></div>
+          </div>
+
+          <div id="google-signup-btn" className="w-full flex justify-center mb-4 min-h-[44px]"></div>
 
           {/* LOGIN LINK */}
           <p className="text-center mt-8">
             Sudah punya akun?{" "}
-
-            <Link
-              to="/login"
-              className="font-semibold underline"
-            >
+            <Link to="/login" className="font-semibold underline">
               Masuk di sini
             </Link>
           </p>
-
         </div>
       </div>
     </div>

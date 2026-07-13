@@ -20,6 +20,8 @@ import Cart from "../pages/user/Cart";
 import Checkout from "../pages/user/Checkout";
 import Login from "../pages/user/Login";
 import Register from "../pages/user/Register";
+import ForgotPassword from "../pages/user/ForgotPassword";
+import ResetPassword from "../pages/user/ResetPassword";
 import Profile from "../pages/user/Profile";
 import UserOrders from "../pages/user/Orders"; 
 import OrderDetail from "../pages/user/OrderDetail";
@@ -84,6 +86,14 @@ const router = createBrowserRouter([
       {
         path: "/register",
         element: <Register />,
+      },
+      {
+        path: "/forgot-password",
+        element: <ForgotPassword />,
+      },
+      {
+        path: "/reset-password",
+        element: <ResetPassword />,
       },
       // =======================================
       // PROFILE PAGES (Memakai ProfileLayout)

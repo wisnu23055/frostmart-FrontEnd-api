@@ -18,8 +18,72 @@ function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Load remembered email on mount
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("remembered_email");
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
+
+  // Handle Google Login Callback
+  const handleGoogleCallback = async (response) => {
+    setErrorMsg("");
+    setIsLoading(true);
+    try {
+      const res = await axiosInstance.post("/auth/google/signin", {
+        credential: response.credential,
+      });
+
+      const { user: loggedInUser } = res.data;
+      localStorage.setItem("user", JSON.stringify(loggedInUser));
+      dispatch(loginSuccess(loggedInUser));
+
+      if (loggedInUser.role && loggedInUser.role.toLowerCase() === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("[Google Login Client Error]", error);
+      setErrorMsg(error.response?.data?.message || "Login Google gagal.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Initialize Google Sign In
+  useEffect(() => {
+    if (user) return; // Skip if already logged in
+
+    const initGoogle = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "1043743475960-9k6f1q28p8h2u4g3u2g3u2g3u2g3u2g3.apps.googleusercontent.com", // Google Client ID placeholder/env
+          callback: handleGoogleCallback,
+        });
+        window.google.accounts.id.renderButton(
+          document.getElementById("google-signin-btn"),
+          { theme: "outline", size: "large", width: "100%", text: "continue_with" }
+        );
+      }
+    };
+
+    // Retry initialization in case google script is still loading
+    const interval = setInterval(() => {
+      if (window.google) {
+        initGoogle();
+        clearInterval(interval);
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [user]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -32,22 +96,23 @@ function Login() {
         password,
       });
 
-      const { user } = response.data;
+      const { user: loggedInUser } = response.data;
 
-      localStorage.setItem("user", JSON.stringify(user));
+      // Ingat saya logic
+      if (rememberMe) {
+        localStorage.setItem("remembered_email", email);
+      } else {
+        localStorage.removeItem("remembered_email");
+      }
 
-      dispatch(loginSuccess(user));
+      localStorage.setItem("user", JSON.stringify(loggedInUser));
+      dispatch(loginSuccess(loggedInUser));
 
-      // 👇👇 LOGIKA PINTAR PENGECEKAN ROLE 👇👇
-      // Jika role user adalah "admin", lemparkan ke halaman dashboard Zahra
-      if (user.role && user.role.toLowerCase() === "admin") {
+      if (loggedInUser.role && loggedInUser.role.toLowerCase() === "admin") {
         navigate("/admin");
       } else {
-        // Jika pembeli biasa, lemparkan ke halaman utama Aditya
         navigate("/");
       }
-      // 👆👆 ================================== 👆👆
-      
     } catch (error) {
       if (error.response && error.response.data.message) {
         setErrorMsg(error.response.data.message);
@@ -128,15 +193,21 @@ function Login() {
           </div>
 
           <div className="flex justify-between items-center text-sm">
-            <label className="flex items-center gap-2">
-              <input type="checkbox" /> Ingat saya
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              Ingat saya
             </label>
-            <button
-              type="button"
-              className="text-[#1c54ff] hover:text-blue-800 transition"
+            <Link
+              to="/forgot-password"
+              className="text-[#1c54ff] hover:text-blue-800 transition font-medium"
             >
               Lupa Password?
-            </button>
+            </Link>
           </div>
 
           <button
@@ -150,7 +221,16 @@ function Login() {
           </button>
         </form>
 
-        <p className="text-center mt-8 text-gray-600">
+        {/* GOOGLE SIGN IN BUTTON */}
+        <div className="relative flex py-4 items-center">
+          <div className="flex-grow border-t border-gray-200"></div>
+          <span className="flex-shrink mx-4 text-gray-400 text-xs uppercase">atau masuk dengan</span>
+          <div className="flex-grow border-t border-gray-200"></div>
+        </div>
+
+        <div id="google-signin-btn" className="w-full flex justify-center mb-4 min-h-[44px]"></div>
+
+        <p className="text-center mt-6 text-gray-600">
           Belum punya akun?{" "}
           <Link
             to="/register"
